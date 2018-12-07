@@ -1,0 +1,102 @@
+<main class='main-content bgc-grey-100'>
+  <div id='mainContent'>
+    <div class="row gap-20 masonry pos-r">
+      <div class="masonry-item col-md-12">
+        <div class="bgc-white p-20 bd">
+          <h6 class="c-grey-900 float-left">
+            Current Status
+          </h6>
+          <div class="icon-holder">
+            <i ng-show="passCheck" class="check-pass text-success ti-check" data-toggle="tooltip" data-placement="bottom" title="Everything is looking good!"></i>
+            <i ng-show="false" class="check-fail text-danger ti-alert" data-toggle="tooltip" data-placement="bottom" title="Build failed to pass! Click to veiw detail!"></i>
+          </div>
+
+          <div class="layers">
+            <div class="layer w-100">
+              <!-- Progress Bars -->
+              <div class="layers" style="display: unset !important;">
+                  <h6 class="mB-5">Current Policies Status</h6>
+                <div class="layer w-100">
+                  <h6 class="mB-5">32/32</h6>
+                  <small class="fw-600 c-grey-700"># of pass / # of total policies</small>
+                  <span class="pull-right c-grey-600 fsz-sm">100%</span>
+                  <div class="progress mT-10">
+                    <div class="progress-bar bgc-deep-purple-500" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" ng-style="{width: '100' + '%'}"></div>
+                  </div>
+                </div>
+                  <h6 class="mB-5">Current Alerts Status</h6>
+                <div class="layer w-100">
+                  <h6 class="mB-5">2/20</h6>
+                  <small class="fw-600 c-grey-700"># of triggered alerts / # of total alerts</small>
+                  <span class="pull-right c-grey-600 fsz-sm">10%</span>
+                  <div class="progress mT-10">
+                    <div class="progress-bar bgc-light-blue-500" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" ng-style="{width: '10' + '%'}"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="masonry-item col-md-6">
+        <div class="bgc-white p-20 bd">
+          <h6 class="c-grey-900">Overall</h6>
+          <div class="mT-30">
+            <div class="peers mT-20 fxw-nw@lg+ jc-sb ta-c">
+              <div class="peer">
+                <div class="easy-pie-chart" data-size='80' data-percent="95.75" data-bar-color='#f44336'>
+                  <span></span>
+                </div>
+                <h6 class="fsz-sm">Policies Pass Rate</h6>
+              </div>
+              <div class="peer">
+                <div class="easy-pie-chart" data-size='80' data-percent="15.36" data-bar-color='#2196f3'>
+                  <span></span>
+                </div>
+                <h6 class="fsz-sm">Alerts Trigger Rate</h6>
+              </div>
+              <div class="peer">
+                <div class="easy-pie-chart" data-size='80' data-percent="5.2" data-bar-color='#ff9800'>
+                  <span></span>
+                </div>
+                <h6 class="fsz-sm">New Login Rate</h6>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="masonry-item col-md-6">
+        <div class="bgc-white p-20 bd">
+          <h6 class="c-grey-900">Monthly</h6>
+          <div class="mT-30">
+            <div class="peers mT-20 fxw-nw@lg+ jc-sb ta-c">
+              <div class="peer">
+                <div class="easy-pie-chart" data-size='80' data-percent="92.45" data-bar-color='#f44336'>
+                  <span></span>
+                </div>
+                <h6 class="fsz-sm">Policies Pass Rate</h6>
+              </div>
+              <div class="peer">
+                <div class="easy-pie-chart" data-size='80' data-percent="17.36" data-bar-color='#2196f3'>
+                  <span></span>
+                </div>
+                <h6 class="fsz-sm">Alerts Trigger Rate</h6>
+              </div>
+              <div class="peer">
+                <div class="easy-pie-chart" data-size='80' data-percent="4.7" data-bar-color='#ff9800'>
+                  <span></span>
+                </div>
+                <h6 class="fsz-sm">New Login Rate</h6>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- high chart -->
+      <div class="masonry-item col-md-12">
+        <div id="trendChart" class="trend-chart bd" style="height: 400px;"></div>
+      </div>
+    </div>
+  </div>
+</main>

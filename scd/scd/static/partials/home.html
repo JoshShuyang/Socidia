@@ -1,0 +1,133 @@
+<div class="app">
+  <!-- #Left Sidebar ==================== -->
+  <div class="sidebar">
+    <div class="sidebar-inner">
+      <!-- ### $Sidebar Header ### -->
+      <div class="sidebar-logo">
+        <div class="peers ai-c fxw-nw">
+          <div class="peer peer-greed">
+            <a class="sidebar-link td-n" ng-click="goTo('dashboard')">
+              <div class="peers ai-c fxw-nw">
+                <div class="peer">
+                  <div class="logo" style="height: 65px;">
+                    <img style="width: 65px; margin-top: 10px;" src="static/img/icons/logo.png" alt="">
+                  </div>
+                </div>
+                <div class="peer peer-greed">
+                  <h5 class="lh-1 mB-0 logo-text p-left-30">S N P</h5>
+                </div>
+              </div>
+            </a>
+          </div>
+          <div class="peer">
+            <div class="mobile-toggle sidebar-toggle">
+              <a href="" class="td-n">
+                <i class="ti-arrow-circle-left"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ### $Sidebar Menu ### -->
+      <ul class="sidebar-menu scrollable pos-r">
+        <li class="nav-item mT-30">
+          <a class="sidebar-link ng-class:{'active' : $state.current.name.indexOf('dashboard') >= 0}" ui-sref=".dashboard">
+            <span class="icon-holder">
+              <i class="c-blue-500 ti-home"></i>
+            </span>
+            <span class="title">Dashboard</span>
+          </a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="sidebar-link ng-class:{'active' : $state.current.name.indexOf('policy_list') >= 0}" ui-sref=".policy_list">
+            <span class="icon-holder">
+              <i class="c-orange-500 ti-layout-list-thumb"></i>
+            </span>
+            <span class="title">Policy List</span>
+          </a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="sidebar-link ng-class:{'active' : $state.current.name.indexOf('alert_list') >= 0}" ui-sref=".alert_list">
+            <span class="icon-holder">
+              <i class="c-deep-purple-500 ti-view-list-alt"></i>
+            </span>
+            <span class="title">Alert List</span>
+          </a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="sidebar-link ng-class:{'active' : $state.current.name.indexOf('management') >= 0}" ui-sref=".management">
+            <span class="icon-holder">
+              <i class="c-green-500 ti-ruler-pencil"></i>
+            </span>
+            <span class="title">Management</span>
+          </a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="sidebar-link ng-class:{'active' : $state.current.name.indexOf('setting') >= 0}" ui-sref=".setting">
+            <span class="icon-holder">
+              <i class="c-teal-500 ti-settings"></i>
+            </span>
+            <span class="title">Setting</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- #Main ============================ -->
+  <div class="page-container">
+    <!-- ### $Topbar ### -->
+    <div class="header navbar">
+      <div class="header-container">
+        <ul class="nav-left">
+          <li>
+            <a id='sidebar-toggle' class="sidebar-toggle" href="javascript:void(0);">
+              <i class="ti-menu"></i>
+            </a>
+          </li>
+        </ul>
+          <div style="position: absolute; left: 50%;">
+          <h5 class="mB-5 c-grey-900" style="position: relative; left: -50%; top: 15px;">Social Network Protection Admin</h5>
+          </div>
+        <ul class="nav-right">
+          <li class="dropdown">
+            <a href="" class="dropdown-toggle no-after peers fxw-nw ai-c lh-1" data-toggle="dropdown">
+              <div class="peer mR-10">
+                <span class="icon-holder">
+                  <i class="ti-user"></i>
+                </span>
+              </div>
+              <div class="peer">
+                <span class="fsz-sm c-grey-900">{{currentUser.username}}</span>
+              </div>
+            </a>
+            <ul class="dropdown-menu fsz-sm">
+              <li>
+                <a ui-sref=".setting" class="d-b td-n pY-5 bgcH-grey-100 c-grey-700">
+                  <i class="ti-settings mR-10"></i>
+                  <span>Setting</span>
+                </a>
+              </li>
+              <li role="separator" class="divider"></li>
+              <li>
+                <a ng-click="logout()" class="pointer d-b td-n pY-5 bgcH-grey-100 c-grey-700">
+                  <i class="ti-power-off mR-10"></i>
+                  <span>Logout</span>
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ### $App Screen Content ### -->
+    <div ui-view></div>
+
+    <!-- ### $App Screen Footer ### -->
+    <footer class="bdT ta-c p-30 lh-0 fsz-sm c-grey-600">
+      <span>SNP © 2018 Social Network Protection Framework Admin</span>
+    </footer>
+  </div>
+</div>
