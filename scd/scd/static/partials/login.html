@@ -1,47 +1,47 @@
-<div class="limiter">
-	<div class="container-login100">
-		<div class="wrap-login100">
-			<form class="login100-form validate-form">
-				<span class="login100-form-title p-b-48">
-					SNP User Login
-				</span>
+<div class="peers ai-s fxw-nw h-100vh">
+  <div class="d-n@sm- peer peer-greed h-100 pos-r bgr-n bgpX-c bgpY-c bgsz-cv" style='background-image: url("static/img/bg.jpg")'>
+    <div class="pos-a centerXY">
+      <div class="bgc-white bdrs-50p pos-r" style='width: 120px; height: 120px;'>
+        <img class="pos-a centerXY" style='height: 50px;' src="static/img/icons/logo.png" alt="">
+      </div>
+    </div>
+  </div>
+  <div class="col-12 col-md-4 peer pX-40 pY-80 h-100 bgc-white scrollable pos-r" style='min-width: 320px;'>
+    <h4 class="fw-300 c-grey-900 mB-40">Login</h4>
+    <form>
+      <div class="form-group">
+        <label class="text-normal text-dark">Username</label>
+        <input type="email" class="form-control" ng-model="user.email" placeholder="John Doe">
+      </div>
+      <div class="form-group">
+        <label class="text-normal text-dark">Password</label>
+        <input type="password" class="form-control" ng-model="user.password" placeholder="Password">
+      </div>
+      <div class="form-group">
+        <div class="peers ai-c jc-sb fxw-nw mB-20">
+          <div class="peer">
+            <div class="checkbox checkbox-circle checkbox-info peers ai-c">
+              <input type="checkbox" id="inputCall1" name="inputCheckboxesCall" class="peer">
+              <label for="inputCall1" class=" peers peer-greed js-sb ai-c">
+                <span class="peer peer-greed">Remember Me</span>
+              </label>
+            </div>
+          </div>
 
-				<div class="wrap-input100 validate-input" data-validate="Valid email is: a@b.c">
-					<input class="input100" type="text" name="email" ng-model="user.email">
-					<span class="focus-input100" data-placeholder="Email"></span>
-				</div>
-
-				<div class="wrap-input100 validate-input" data-validate="Enter password">
-					<span class="btn-show-pass">
-						<i class="zmdi zmdi-eye"></i>
-					</span>
-					<input class="input100" type="password" name="pass" ng-model="user.password">
-					<span class="focus-input100" data-placeholder="Password"></span>
-				</div>
-
-				<div id="errorMess" class="alert alert-danger display-none" role="alert">
-          {{errorMessage}}
+          <div class="peer">
+            <a href="/#/register">Register</a>
+          </div>
         </div>
 
-				<div class="container-login100-form-btn">
-					<div class="wrap-login100-form-btn">
-						<div class="login100-form-bgbtn"></div>
-						<button class="login100-form-btn">
-							Login
-						</button>
-					</div>
-				</div>
+        <div class="center">
+          <button class="btn btn-primary" ng-click="login()">Login</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
 
-				<!--<div class="text-center p-t-115"> // for future UI sign up feature
-					<span class="txt1">
-						Don’t have an account?
-					</span>
 
-					<a class="txt2" href="#">
-						Sign Up
-					</a>
-				</div>-->
-			</form>
-		</div>
-	</div>
+<div id="errorMess" class="alert alert-danger display-none" role="alert">
+	{{errorMessage}}
 </div>

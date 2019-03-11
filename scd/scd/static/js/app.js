@@ -22,6 +22,12 @@ scd.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
             controller: LoginController
         })
 
+        .state('register', {
+            url: '/register',
+            templateUrl: 'static/partials/register.html',
+            controller: RegisterController
+        })
+
         
         .state('home', {
             url: '/home',
@@ -83,7 +89,7 @@ scd.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
 
     	$rootScope.$on('$locationChangeStart', function (event, next, current) {
         	// redirect to login page if not logged in and trying to access a restricted page
-        	if ($location.path() !== '/login' && !$rootScope.globals.currentUser) {
+        	if ($location.path() !== '/login' && $location.path() !== '/register' && !$rootScope.globals.currentUser) {
             	$location.path('/login');
         	}
     	});
