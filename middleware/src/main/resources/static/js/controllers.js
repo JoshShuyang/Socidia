@@ -41,21 +41,54 @@ function LoginController($rootScope, $scope, $location, UserService, Authenticat
 
 function RegisterController($rootScope, $scope, $location, RegisterService, AuthenticationService) {
   AuthenticationService.ClearCredentials();
+  $scope.alertMessage = "";
+  $scope.successMessage = "Password changed successfully!";
+  $scope.validation = true;
+  $scope.userInfo = {
+    userName: "",
+    email: "",
+    password: "",
+    repassword: ""
+  }
 
   $scope.register = function() {
-    var added = RegisterService.save({userSignup:$scope.userInfo});
+    $scope.validation = validateRegistration();
 
-    added.$promise.then(function(res) {
-      if (res.error){
-        $scope.errorMessage = res.error;
-        $("#errorMess").css("display", "block").fadeOut(15000);
-      }
-      else if (res.success) {
-        $("#successMess").css("display", "block").fadeOut(5000);
-      }
-    });
+    if ($scope.validation) {
+      var registered = RegisterService.save({userSignup:$scope.userInfo});
 
-    $location.path('/login');
+        registered.$promise.then(function(res) {
+
+          /*
+          if (res.error){
+            $scope.errorMessage = res.error;
+            $("#errorMess").css("display", "block").fadeOut(15000);
+          }
+          else if (res.success) {
+            $("#successMess").css("display", "block").fadeOut(5000);
+          }
+        });*/
+
+        //$location.path('/login');
+      })
+    }
+  }
+
+  function validateRegistration() {
+    if ($scope.userInfo.userName === "" || 
+        $scope.userInfo.email === "" ||
+        $scope.userInfo.password === "" ||
+        $scope.userInfo.repassword === "") {
+      $scope.alertMessage = "Please fill out complete information!";
+      return false;
+    }
+
+    if ($scope.userInfo.password !== $scope.userInfo.repassword) {
+      $scope.alertMessage = "Re-enter password does not match password!";
+      return false;
+    }
+
+    return true;
   }
 }
 

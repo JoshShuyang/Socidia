@@ -14,22 +14,31 @@
       </div>
       <div class="form-group">
         <label class="text-normal text-dark">Username</label>
-        <input type="text" class="form-control" ng-model="userInfo.userName" Placeholder='John Doe'>
+        <input type="text" class="form-control" ng-model="userInfo.userName" ng-focus="validation=true" Placeholder='John Doe'>
       </div>
       <div class="form-group">
         <label class="text-normal text-dark">Email Address</label>
-        <input type="email" class="form-control" ng-model="userInfo.email" Placeholder='name@email.com'>
+        <input type="email" class="form-control" ng-model="userInfo.email" ng-focus="validation=true" Placeholder='name@email.com'>
       </div>
       <div class="form-group">
         <label class="text-normal text-dark">Password</label>
-        <input type="password" class="form-control" ng-model="userInfo.password" placeholder="Password">
+        <input type="password" class="form-control" ng-model="userInfo.password" ng-focus="validation=true" placeholder="Password">
       </div>
       <div class="form-group">
         <label class="text-normal text-dark">Confirm Password</label>
-        <input type="password" class="form-control" ng-model="userInfo.repassword" placeholder="Password">
+        <input type="password" class="form-control" ng-model="userInfo.repassword" ng-focus="validation=true" placeholder="Password">
       </div>
       <div class="form-group center">
-        <button class="btn btn-primary">Register</button>
+        <button class="btn btn-primary" ng-click="register()">Register</button>
+      </div>
+      <div id="alertMess" ng-show="!validation" class="alert alert-warning" role="alert">
+        {{alertMessage}}
+      </div>
+      <div id="errorMess" class="alert alert-danger display-none" role="alert">
+        {{errorMessage}}
+      </div>
+      <div id="successMess" class="alert alert-primary display-none" role="alert">
+        {{successMessage}}
       </div>
     </form>
   </div>

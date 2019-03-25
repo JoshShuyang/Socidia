@@ -31,7 +31,9 @@ public class SignUpController {
 
     @RequestMapping(value = "/signup", method = RequestMethod.POST)
     public ResponseEntity<?> signup(@RequestBody UserSignup userSignup, HttpServletRequest request) {
-
+        System.out.println("Sign Up API reached!");
+        return new ResponseEntity<>(HttpStatus.OK);
+        // ***********************************
         String username = userSignup.getUsername();
         String email = userSignup.getEmail();
         String password = userSignup.getPassword();
