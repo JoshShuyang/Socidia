@@ -1,4 +1,4 @@
-package config;
+package socialmediaprotection.project.config;
 
 public class Configuraton {
 

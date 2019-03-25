@@ -1,0 +1,11 @@
+package socialmediaprotection.project.Scanner.Facebook;
+
+public class FBAuthor {
+    private String name;
+    private String authorId;
+
+    public FBAuthor(String name, String authorId) {
+        this.name = name;
+        this.authorId = authorId;
+    }
+}
