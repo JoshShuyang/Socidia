@@ -7,6 +7,9 @@ angular.module('RestApiServices', ['ngResource'])
 			changePasswordResource: $resource('/api/user', {}, {update: {method: 'PUT'}})
 		}
 	})
+	.factory('RegisterService', function($resource) {
+		return $resource('/signup');
+	})
 	.factory('HistoryService', function($resource) {
 		return $resource('/api/history');
 	})

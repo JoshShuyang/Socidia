@@ -24,54 +24,54 @@ scd.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
 
         .state('register', {
             url: '/register',
-            templateUrl: 'static/partials/register.html',
+            templateUrl: 'partials/register.html',
             controller: RegisterController
         })
 
         
         .state('home', {
             url: '/home',
-            templateUrl: 'static/partials/home.html',
+            templateUrl: 'partials/home.html',
             controller: HomeController
         })
 
         .state('home.dashboard', {
             url: '/dashboard',
-            templateUrl: 'static/partials/home-dashboard.html',
+            templateUrl: 'partials/home-dashboard.html',
             controller: DashboardController
         })
 
         .state('home.policy_list', {
             url: '/policy_list',
-            templateUrl: 'static/partials/home-policy_list.html',
+            templateUrl: 'partials/home-policy_list.html',
             controller: PolicyListController
         })
         .state('home.policy_list.policy_detail', {
             url: '/policy_detail?policyId',
-            templateUrl: 'static/partials/home-policy_list-policy_detail.html',
+            templateUrl: 'partials/home-policy_list-policy_detail.html',
             controller: PolicyDetailController
         })
         .state('home.policy_list.policy_detail.rule_detail', {
             url: '/rule_detail?ruleId',
-            templateUrl: 'static/partials/home-policy_list-policy_detail-rule_detail.html',
+            templateUrl: 'partials/home-policy_list-policy_detail-rule_detail.html',
             controller: RuleDetailController
         })
 
         .state('home.alert_list', {
             url: '/alert_list',
-            templateUrl: 'static/partials/home-alert_list.html',
+            templateUrl: 'partials/home-alert_list.html',
             controller: AlertListController
         })
 
         .state('home.management', {
             url: '/management',
-            templateUrl: 'static/partials/home-management.html',
+            templateUrl: 'partials/home-management.html',
             controller: ManagementController
         })
         
         .state('home.setting', {
             url: '/setting',
-            templateUrl: 'static/partials/home-setting.html',
+            templateUrl: 'partials/home-setting.html',
             controller: SettingController
         })
 }])

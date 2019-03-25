@@ -39,10 +39,22 @@ function LoginController($rootScope, $scope, $location, UserService, Authenticat
   }
 }
 
-function RegisterController($rootScope, $scope, $location, UserService) {
+function RegisterController($rootScope, $scope, $location, RegisterService, AuthenticationService) {
   AuthenticationService.ClearCredentials();
 
   $scope.register = function() {
+    var added = RegisterService.save({userSignup:$scope.userInfo});
+
+    added.$promise.then(function(res) {
+      if (res.error){
+        $scope.errorMessage = res.error;
+        $("#errorMess").css("display", "block").fadeOut(15000);
+      }
+      else if (res.success) {
+        $("#successMess").css("display", "block").fadeOut(5000);
+      }
+    });
+
     $location.path('/login');
   }
 }
