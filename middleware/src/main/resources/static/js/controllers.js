@@ -23,8 +23,8 @@ function LoginController($rootScope, $scope, $location, UserService, Authenticat
   $scope.login = function() {
     AuthenticationService.SetCredentials($scope.user.email, $scope.user.password);
     $location.path('/home/dashboard');
-    /*
-    var userLogin = UserService.loginResource.login({userInfo:$scope.user});
+    
+    var userLogin = UserService.loginResource.login({username:$scope.user.email, password:$scope.user.password});
 
     userLogin.$promise.then(function(res){
       if (res.error) {
@@ -35,7 +35,7 @@ function LoginController($rootScope, $scope, $location, UserService, Authenticat
         AuthenticationService.SetCredentials($scope.user.email, $scope.user.password);
         $location.path('/home/dashboard');
       }
-    });*/
+    });
   }
 }
 
@@ -55,10 +55,18 @@ function RegisterController($rootScope, $scope, $location, RegisterService, Auth
     $scope.validation = validateRegistration();
 
     if ($scope.validation) {
-      var registered = RegisterService.save({userSignup:$scope.userInfo});
+      var userInfo = {
+        username: $scope.userInfo.userName,
+        email: $scope.userInfo.email,
+        password: $scope.userInfo.password,
+      }
+      var registered = RegisterService.save({
+        username: $scope.userInfo.userName, 
+        email: $scope.userInfo.email,
+        password: $scope.userInfo.password
+      });
 
-        registered.$promise.then(function(res) {
-
+        registered.$promise.then(function(response) {
           /*
           if (res.error){
             $scope.errorMessage = res.error;
@@ -69,7 +77,7 @@ function RegisterController($rootScope, $scope, $location, RegisterService, Auth
           }
         });*/
 
-        //$location.path('/login');
+        $location.path('/login');
       })
     }
   }
