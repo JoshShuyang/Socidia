@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width"> <!-- Forcing initial-scale shouldn't be necessary -->
     <meta http-equiv="X-UA-Compatible" content="IE=edge"> <!-- Use the latest (edge) version of IE rendering engine -->
     <meta name="x-apple-disable-message-reformatting">  <!-- Disable auto-scale in iOS 10 Mail entirely -->
-    <title>500</title>
+    <title>Socidia</title>
 
     <style>
       body {
@@ -90,11 +90,10 @@
   </head>
   <body>
     <div class="email-content">
-      <h5>Title</h5>
-      <h1 class="mB-30 fw-900 lh-1" style="font-size: 35px;color: #007bff;">success type</h1>
-      <h3 class="mB-10 fsz-lg c-grey-900 tt-c fw-700">id info</h3>
-      <p class="mB-30 fsz-def c-grey-700">success msg</p>
-        <a href="{{goToUrl}}" class="go-btn">go to web page</a>
+      <h1 class="mB-30 fw-900 lh-1" style="font-size: 35px;color: #007bff;">success</h1>
+      <h3 class="mB-10 fsz-lg c-grey-900 tt-c fw-700">Hi, ${email}</h3>
+      <p class="mB-30 fsz-def c-grey-700">${message}</p>
+        <a href="{{goToUrl}}" class="go-btn">go to home page</a>
     </div>
   </body>
 </html>

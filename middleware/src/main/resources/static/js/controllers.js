@@ -23,8 +23,8 @@ function LoginController($rootScope, $scope, $location, UserService, Authenticat
   $scope.login = function() {
     AuthenticationService.SetCredentials($scope.user.email, $scope.user.password);
     $location.path('/home/dashboard');
-    /*
-    var userLogin = UserService.loginResource.login({userInfo:$scope.user});
+    
+    var userLogin = UserService.loginResource.login({username:$scope.user.email, password:$scope.user.password});
 
     userLogin.$promise.then(function(res){
       if (res.error) {
@@ -35,15 +35,68 @@ function LoginController($rootScope, $scope, $location, UserService, Authenticat
         AuthenticationService.SetCredentials($scope.user.email, $scope.user.password);
         $location.path('/home/dashboard');
       }
-    });*/
+    });
   }
 }
 
-function RegisterController($rootScope, $scope, $location, UserService) {
+function RegisterController($rootScope, $scope, $location, RegisterService, AuthenticationService) {
   AuthenticationService.ClearCredentials();
+  $scope.alertMessage = "";
+  $scope.successMessage = "Password changed successfully!";
+  $scope.validation = true;
+  $scope.userInfo = {
+    userName: "",
+    email: "",
+    password: "",
+    repassword: ""
+  }
 
   $scope.register = function() {
-    $location.path('/login');
+    $scope.validation = validateRegistration();
+
+    if ($scope.validation) {
+      var userInfo = {
+        username: $scope.userInfo.userName,
+        email: $scope.userInfo.email,
+        password: $scope.userInfo.password,
+      }
+      var registered = RegisterService.save({
+        username: $scope.userInfo.userName, 
+        email: $scope.userInfo.email,
+        password: $scope.userInfo.password
+      });
+
+        registered.$promise.then(function(response) {
+          /*
+          if (res.error){
+            $scope.errorMessage = res.error;
+            $("#errorMess").css("display", "block").fadeOut(15000);
+          }
+          else if (res.success) {
+            $("#successMess").css("display", "block").fadeOut(5000);
+          }
+        });*/
+
+        $location.path('/login');
+      })
+    }
+  }
+
+  function validateRegistration() {
+    if ($scope.userInfo.userName === "" || 
+        $scope.userInfo.email === "" ||
+        $scope.userInfo.password === "" ||
+        $scope.userInfo.repassword === "") {
+      $scope.alertMessage = "Please fill out complete information!";
+      return false;
+    }
+
+    if ($scope.userInfo.password !== $scope.userInfo.repassword) {
+      $scope.alertMessage = "Re-enter password does not match password!";
+      return false;
+    }
+
+    return true;
   }
 }
 

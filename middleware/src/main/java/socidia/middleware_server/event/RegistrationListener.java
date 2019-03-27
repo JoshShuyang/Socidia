@@ -16,8 +16,6 @@ import java.util.UUID;
 
 @Component
 public class RegistrationListener implements ApplicationListener<OnRegistrationSuccessEvent> {
-    //private final static String FROM = "Socidia <chenhanleetcode@gmail.com>";
-
     @Autowired
     private IUserService service;
 
@@ -46,8 +44,6 @@ public class RegistrationListener implements ApplicationListener<OnRegistrationS
         final SimpleMailMessage email = constructEmailMessage(event, user, token);
         mailSender.send(email);
     }
-
-    //
 
     private final SimpleMailMessage constructEmailMessage(final OnRegistrationSuccessEvent event, final User user, final String token) {
         final String recipientAddress = user.getEmail();
