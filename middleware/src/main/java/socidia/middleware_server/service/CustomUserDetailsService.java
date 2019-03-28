@@ -28,9 +28,13 @@ public class CustomUserDetailsService implements UserDetailsService {
         Optional<User> userOp = userRepository.findByEmail(name);
 
         if (!userOp.isPresent()) {
-            throw new UsernameNotFoundException("Could not find the user " + name);
+            throw new RuntimeException("Email address doesn't exist");
         }
         User user = userOp.get();
+
+        if (!user.isEnabled()) {
+            throw new RuntimeException("unactivated");
+        }
 
         Set<Role> roles = user.getRoles();
         Set<GrantedAuthority> grantedAuthorities = new HashSet<>();

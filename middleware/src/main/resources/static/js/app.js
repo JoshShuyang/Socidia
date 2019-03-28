@@ -18,13 +18,13 @@ scd.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
     $stateProvider
     	.state('login', {
         	url: '/login',
-            templateUrl: 'middleware/partials/login.html',
+            templateUrl: 'partials/login.html',
             controller: LoginController
         })
 
         .state('register', {
             url: '/register',
-            templateUrl: 'middleware/partials/register.html',
+            templateUrl: 'partials/register.html',
             controller: RegisterController
         })
 

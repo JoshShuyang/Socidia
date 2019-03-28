@@ -34,10 +34,10 @@ public class RESTAuthenticationFailureHandler extends SimpleUrlAuthenticationFai
 
         String errorMessage = messages.getMessage("message.badCredentials", null, locale);
 
-        if (exception.getMessage().equalsIgnoreCase("User is disabled")) {
+        if (exception.getMessage().equalsIgnoreCase("Email address doesn't exist")) {
+            errorMessage = messages.getMessage("auth.message.emailNotExist", null, locale);
+        } else if (exception.getMessage().equalsIgnoreCase("unactivated")) {
             errorMessage = messages.getMessage("auth.message.disabled", null, locale);
-        } else if (exception.getMessage().equalsIgnoreCase("User account has expired")) {
-            errorMessage = messages.getMessage("auth.message.expired", null, locale);
         }
 
         request.getSession().setAttribute(WebAttributes.AUTHENTICATION_EXCEPTION, errorMessage);

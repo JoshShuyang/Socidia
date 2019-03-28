@@ -24,6 +24,7 @@ import java.util.Locale;
 import java.util.Optional;
 
 @RestController
+@RequestMapping(value = "/middleware")
 public class SignUpController {
 
     @Autowired
