@@ -42,7 +42,7 @@ function LoginController($rootScope, $scope, $location, UserService, Authenticat
 function RegisterController($rootScope, $scope, $location, RegisterService, AuthenticationService) {
   AuthenticationService.ClearCredentials();
   $scope.alertMessage = "";
-  $scope.successMessage = "Password changed successfully!";
+  $scope.successMessage = "Registered successfully! Please go to your email and click on the verification link!";
   $scope.validation = true;
   $scope.userInfo = {
     userName: "",
@@ -66,18 +66,14 @@ function RegisterController($rootScope, $scope, $location, RegisterService, Auth
         password: $scope.userInfo.password
       });
 
-        registered.$promise.then(function(response) {
-          /*
-          if (res.error){
-            $scope.errorMessage = res.error;
-            $("#errorMess").css("display", "block").fadeOut(15000);
-          }
-          else if (res.success) {
-            $("#successMess").css("display", "block").fadeOut(5000);
-          }
-        });*/
-
-        $location.path('/login');
+      registered.$promise.then(function(res) {
+        if (res.error){
+          $scope.errorMessage = res.error;
+          $("#errorMess").css("display", "block").fadeOut(15000);
+        }
+        else if (res.success) {
+          $("#successMess").css("display", "block").fadeOut(15000);
+        }
       })
     }
   }

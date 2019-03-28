@@ -24,7 +24,8 @@ public class FBPost {
 
     public FBPost(JsonObject postObject) {
         this.postId = postObject.get(ID).asString().toString();
-        this.message = postObject.get(MESSAGE).asString().toString();
+        if (postObject.get(MESSAGE) != null)
+            this.message = postObject.get(MESSAGE).asString().toString();
         JsonObject authorInfo = postObject.get(FROM).asObject();
         this.author = new FBAuthor(authorInfo.get(NAME).asString().toString(), authorInfo.get(ID).asString().toString());
         fbCommentList = new ArrayList<>();
@@ -36,5 +37,45 @@ public class FBPost {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+    }
+
+    public String getPostId() {
+        return postId;
+    }
+
+    public void setPostId(String postId) {
+        this.postId = postId;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public List<FBComment> getFbCommentList() {
+        return fbCommentList;
+    }
+
+    public void setFbCommentList(List<FBComment> fbCommentList) {
+        this.fbCommentList = fbCommentList;
+    }
+
+    public FBAuthor getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(FBAuthor author) {
+        this.author = author;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 }
