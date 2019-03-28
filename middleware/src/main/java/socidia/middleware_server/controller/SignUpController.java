@@ -58,7 +58,7 @@ public class SignUpController {
         User res = userService.register(username, email, password);
         if (res != null) {
             try {
-                String appUrl = request.getScheme() + request.getServerName() + request.getServerPort() + request.getContextPath();
+                String appUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
                 eventPublisher.publishEvent(new OnRegistrationSuccessEvent(res, request.getLocale(), appUrl));
             } catch (Exception e) {
                 e.printStackTrace();
