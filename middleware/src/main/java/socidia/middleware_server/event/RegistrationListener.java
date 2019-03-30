@@ -1,5 +1,6 @@
 package socidia.middleware_server.event;
 
+import org.thymeleaf.TemplateEngine;
 import socidia.middleware_server.model.User;
 import socidia.middleware_server.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,9 @@ public class RegistrationListener implements ApplicationListener<OnRegistrationS
     @Autowired
     private Environment env;
 
-    // API
+    @Autowired
+    private TemplateEngine templateEngine;
+
 
     @Override
     public void onApplicationEvent(final  OnRegistrationSuccessEvent event) {

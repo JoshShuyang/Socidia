@@ -44,7 +44,8 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
             return this.getAuthenticationManager().authenticate(token);
         } catch(IOException e) {
             LOG.error(ERROR_MESSAGE, e);
-            throw new InternalAuthenticationServiceException(ERROR_MESSAGE, e);
+            //throw new InternalAuthenticationServiceException(ERROR_MESSAGE, e);
+            return null;
         }
     }
     public static class LoginRequest {

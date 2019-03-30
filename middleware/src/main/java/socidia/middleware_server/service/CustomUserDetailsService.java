@@ -10,6 +10,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -24,16 +25,16 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     @Transactional
-    public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException, RuntimeException {
         Optional<User> userOp = userRepository.findByEmail(name);
 
         if (!userOp.isPresent()) {
-            throw new RuntimeException("Email address doesn't exist");
+            throw new UsernameNotFoundException("Email address doesn't exist");
         }
         User user = userOp.get();
 
         if (!user.isEnabled()) {
-            throw new RuntimeException("unactivated");
+            throw new UsernameNotFoundException("unactivated");
         }
 
         Set<Role> roles = user.getRoles();
