@@ -1,8 +1,5 @@
 package socialmediaprotection.project.Scanner;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import socialmediaprotection.project.Scanner.Facebook.FBPost;
 import com.restfb.DefaultFacebookClient;
 import com.restfb.FacebookClient;
 import com.restfb.Parameter;
@@ -10,6 +7,13 @@ import com.restfb.Version;
 import com.restfb.json.JsonArray;
 import com.restfb.json.JsonObject;
 import com.restfb.json.JsonValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.mail.MailException;
+import org.springframework.mail.MailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.mail.javamail.MimeMessagePreparator;
+import socialmediaprotection.project.Scanner.Facebook.FBPost;
 import socialmediaprotection.project.scheduler.ScheduledScan;
 
 import java.sql.*;
@@ -37,6 +41,7 @@ public class FBScanner {
     private List<FBPost> unScannedFBPosts;
     private Map<Integer, String> policyRuleMapping;
     private Map<Integer, FBPost> violations;
+    private MailSender mailSender;
 
     public FBScanner(String access_token, String options, int userId, String dataSource, String username, String password) {
         facebookClient = new DefaultFacebookClient(access_token, Version.VERSION_2_11);
@@ -152,4 +157,19 @@ public class FBScanner {
             }
         }
     }
+    public void prepareAndSend(String recipient, String message) {
+        MimeMessagePreparator messagePreparator = mimeMessage -> {
+            MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage);
+            messageHelper.setFrom("sample@sample.com");
+            messageHelper.setTo(recipient);
+            messageHelper.setSubject("Sample mail subject");
+            messageHelper.setText(message);
+        };
+        try {
+            mailSender.send(messagePreparator);//send mail to SMTP server
+        } catch (MailException e) {
+            // runtime exception; compiler will not force you to handle it
+        }
+    }
+
 }
