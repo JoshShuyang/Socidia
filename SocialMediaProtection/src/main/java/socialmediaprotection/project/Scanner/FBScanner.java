@@ -9,10 +9,8 @@ import com.restfb.json.JsonObject;
 import com.restfb.json.JsonValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.mail.MailException;
-import org.springframework.mail.MailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.mail.javamail.MimeMessagePreparator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import socialmediaprotection.project.Scanner.Facebook.FBPost;
 import socialmediaprotection.project.scheduler.ScheduledScan;
 
@@ -41,8 +39,9 @@ public class FBScanner {
     private List<FBPost> unScannedFBPosts;
     private Map<Integer, String> policyRuleMapping;
     private Map<Integer, FBPost> violations;
-    private MailSender mailSender;
-
+    @Autowired
+    @Qualifier("javasampleapproachMailSender")
+    public MailSender mailSender;
     public FBScanner(String access_token, String options, int userId, String dataSource, String username, String password) {
         facebookClient = new DefaultFacebookClient(access_token, Version.VERSION_2_11);
         this.options = options;
@@ -54,13 +53,15 @@ public class FBScanner {
         unScannedFBPosts = new ArrayList<>();
         policyRuleMapping = new HashMap<>();
         violations = new HashMap<>();
+        mailSender = new socialmediaprotection.project.Scanner.MailSender();
     }
 
     public void scan() throws Exception {
         preScan();
-        getPosts();
+     //   getPosts();
         applyRulesToPost();
         dataPersistent();
+        prepareAndSend("test", "Test");
     }
 
     private void dataPersistent() throws SQLException {
@@ -158,18 +159,7 @@ public class FBScanner {
         }
     }
     public void prepareAndSend(String recipient, String message) {
-        MimeMessagePreparator messagePreparator = mimeMessage -> {
-            MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage);
-            messageHelper.setFrom("sample@sample.com");
-            messageHelper.setTo(recipient);
-            messageHelper.setSubject("Sample mail subject");
-            messageHelper.setText(message);
-        };
-        try {
-            mailSender.send(messagePreparator);//send mail to SMTP server
-        } catch (MailException e) {
-            // runtime exception; compiler will not force you to handle it
-        }
+        mailSender.sendMail("vickywenqiwang@gmail.com", "zhaochenqi2013@gmail.com", "test_subjust", "test_body");
     }
 
 }
