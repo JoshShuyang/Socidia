@@ -61,7 +61,7 @@ public class FBScanner {
      //   getPosts();
         applyRulesToPost();
         dataPersistent();
-        prepareAndSend("test", "Test");
+        prepareAndSend();
     }
 
     private void dataPersistent() throws SQLException {
@@ -158,8 +158,8 @@ public class FBScanner {
             }
         }
     }
-    public void prepareAndSend(String recipient, String message) {
-        mailSender.sendMail("vickywenqiwang@gmail.com", "zhaochenqi2013@gmail.com", "test_subjust", "test_body");
+    public void prepareAndSend() {
+        mailSender.send("vickywenqiwang@gmail.com", "profile change", lastScanDate, "Facebook");
     }
 
 }
