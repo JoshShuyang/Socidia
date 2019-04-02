@@ -42,6 +42,7 @@ public class FBScanner {
     @Autowired
     @Qualifier("javasampleapproachMailSender")
     public MailSender mailSender;
+    public SmsSender smsSender;
     public FBScanner(String access_token, String options, int userId, String dataSource, String username, String password) {
         facebookClient = new DefaultFacebookClient(access_token, Version.VERSION_2_11);
         this.options = options;
@@ -54,6 +55,7 @@ public class FBScanner {
         policyRuleMapping = new HashMap<>();
         violations = new HashMap<>();
         mailSender = new socialmediaprotection.project.Scanner.MailSender();
+        smsSender = new SmsSender();
     }
 
     public void scan() throws Exception {
@@ -61,7 +63,8 @@ public class FBScanner {
      //   getPosts();
         applyRulesToPost();
         dataPersistent();
-        prepareAndSend();
+        //prepareAndSend();
+        sendSms("+19196995879", "Hi there");
     }
 
     private void dataPersistent() throws SQLException {
@@ -159,7 +162,12 @@ public class FBScanner {
         }
     }
     public void prepareAndSend() {
+        String policyType;
+
         mailSender.send("vickywenqiwang@gmail.com", "profile change", lastScanDate, "Facebook");
+    }
+    public void sendSms(String targetNumber, String msg) {
+        smsSender.send(targetNumber, msg);
     }
 
 }

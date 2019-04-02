@@ -98,7 +98,7 @@ public class MailSender {
             //message.setText("This is actual message");
 
             // send the HTML
-            message.setContent("<h1>This is HTML message</h1>", "text/html");
+            message.setContent(String.format("<h1>This is HTML message. Policy Type is %s, Time: %s</h1>", policyType, ts.toString()), "text/html");
 
 
             // Send message
