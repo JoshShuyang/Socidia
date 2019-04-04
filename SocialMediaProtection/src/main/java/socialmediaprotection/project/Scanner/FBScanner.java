@@ -63,8 +63,8 @@ public class FBScanner {
      //   getPosts();
         applyRulesToPost();
         dataPersistent();
-        //prepareAndSend();
-        sendSms("+19196995879", "Hi there");
+        prepareAndSend();
+        //sendSms("+19196995879", "Hi there");
     }
 
     private void dataPersistent() throws SQLException {
