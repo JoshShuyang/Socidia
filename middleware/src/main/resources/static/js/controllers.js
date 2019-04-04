@@ -22,11 +22,10 @@ function LoginController($rootScope, $scope, $location, UserService, Authenticat
 
   $scope.login = function() {
     AuthenticationService.SetCredentials($scope.user.email, $scope.user.password);
-    $location.path('/home/dashboard');
-    
     var userLogin = UserService.loginResource.login({username:$scope.user.email, password:$scope.user.password});
 
     userLogin.$promise.then(function(res){
+      $location.path('/home/dashboard');
       if (res.error) {
         $scope.errorMessage = res.error;
         $("#errorMess").css("display", "block").fadeOut(10000);
