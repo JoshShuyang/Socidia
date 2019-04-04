@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8"> <!-- utf-8 works for most cases -->
     <meta name="viewport" content="width=device-width"> <!-- Forcing initial-scale shouldn't be necessary -->
@@ -92,7 +92,7 @@
     <div class="email-content">
       <h5></h5>
       <h1 class="mB-30 fw-900 lh-1" style="font-size: 35px;color: #f44336;">error</h1>
-      <h3 class="mB-10 fsz-lg c-grey-900 fw-700 tt-c">${token}</h3>
+      <h3 class="mB-10 fsz-lg c-grey-900 fw-700 tt-c" th:text="'This token has expired' + ${token}"></h3>
       <p class="mB-30 fsz-def c-grey-700">${message}</p>
         <a href="{{goToUrl}}" class="go-btn">Go to web page</a>
     </div>

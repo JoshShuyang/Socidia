@@ -1,6 +1,9 @@
 package socidia.middleware_server.event;
 
+import org.springframework.mail.javamail.MimeMailMessage;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 import socidia.middleware_server.model.User;
 import socidia.middleware_server.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +15,10 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 
@@ -44,20 +51,37 @@ public class RegistrationListener implements ApplicationListener<OnRegistrationS
         final String token = UUID.randomUUID().toString();
         service.createVerificationTokenForUser(user, token);
 
-        final SimpleMailMessage email = constructEmailMessage(event, user, token);
+        final MimeMessage email = constructEmailMessage(event, user, token);
         mailSender.send(email);
     }
 
-    private final SimpleMailMessage constructEmailMessage(final OnRegistrationSuccessEvent event, final User user, final String token) {
+    private final MimeMessage constructEmailMessage(final OnRegistrationSuccessEvent event, final User user, final String token) {
         final String recipientAddress = user.getEmail();
-        final String subject = "Socidia Registration Confirmation";
         final String confirmationUrl = event.getAppUrl() + "/registrationConfirm?token=" + token;
         final String message = messages.getMessage("message.regSucc", null, event.getLocale());
-        final SimpleMailMessage email = new SimpleMailMessage();
-        email.setTo(recipientAddress);
-        email.setSubject(subject);
-        email.setText(message + " \r\n" + confirmationUrl);
-        email.setFrom(env.getProperty("support.email"));
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("name", user.getUsername());
+        variables.put("message", message);
+        variables.put("confirmationUrl", confirmationUrl);
+
+        final String subject = "Socidia Registration Confirmation";
+        final MimeMessage email = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(email);
+        try {
+            helper.setTo(recipientAddress);
+            helper.setSubject(subject);
+            helper.setText(generateMailHtml(variables,event), true);
+            helper.setFrom(env.getProperty("support.email"));
+        } catch (MessagingException me) {
+            me.printStackTrace();
+        }
         return email;
+    }
+
+    public String generateMailHtml(Map<String, Object> variables, final OnRegistrationSuccessEvent event) {
+        final String templateFileName = "email"; //Name of the template file without extension
+        String output = this.templateEngine.process(templateFileName, new Context(event.getLocale(), variables));
+
+        return output;
     }
 }
