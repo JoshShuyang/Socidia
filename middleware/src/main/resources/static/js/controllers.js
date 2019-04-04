@@ -681,6 +681,19 @@ function PolicyDetailController($rootScope, $scope, $timeout) {
     });
   });*/
 
+  $scope.alertSetting = {
+    socialAccount: {
+      facebook: true,
+      twitter: false,
+      instagram: false
+    },
+    alertMethod: {
+      email: true,
+      text: false,
+      phone: false
+    }
+  }
+
   $scope.buildData = {
       buildId: $scope.buildId,
       buildDate: '11-08-2018 5:39PM',
