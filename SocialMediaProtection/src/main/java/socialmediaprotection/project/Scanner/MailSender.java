@@ -63,6 +63,11 @@ public class MailSender {
         // Assuming you are sending email from localhost
         String host = "smtp.gmail.com";
         String port = "587";
+        String facebook = "https://ibb.co/jJ7PDYv";
+        String google = "https://ibb.co/p3MCP30";
+        String twitter = "https://ibb.co/Vvh4MkL";
+        String logo = "https://ibb.co/S0yYHhf";
+//        imgMap.put()
 
 
         // Get system properties
