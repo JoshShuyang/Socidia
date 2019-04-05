@@ -107,7 +107,7 @@ public class MailSender {
             // Now set the actual message
             //message.setText("This is actual message");
 
-            String html = readLineByLine("/Users/Vencci/Documents/SJSU Spring2019/CMPE 295B/Socidia/SocialMediaProtection/src/main/java/socialmediaprotection/project/Scanner/email2.html");
+            String html = readLineByLine("/Users/Vencci/Documents/SJSU Spring2019/CMPE 295B/Socidia/SocialMediaProtection/src/main/java/socialmediaprotection/project/Scanner/email.html");
             // send the HTML
            // message.setContent(String.format("<h1>This is HTML message. Policy Type is %s, Time: %s</h1>", policyType, ts.toString()), "text/html");
             message.setContent(html, "text/html");
