@@ -1,0 +1,64 @@
+<div class="peers ai-s fxw-nw h-100vh">
+  <div class="d-n@sm- peer peer-greed h-100 pos-r bgr-n bgpX-c bgpY-c bgsz-cv">
+    <div class="pos-a centerXY">
+      <div class="bgc-white bdrs-50p pos-r">
+        <img class="pos-r centerXY mB-20" style='height: 50px;' src="img/icons/logo.png" alt="">
+
+        <div class="col-md-12 c-grey-900 mB-20 center">Link Your Social Accounts</div>
+
+        <div class="center mB-20">
+          <div class="checkbox checkbox-circle checkbox-info peers ai-c" style="display: inline-block !important; min-width: 100px;">
+            <input type="checkbox" ng-model="alertSetting.socialAccount.facebook" class="peer">
+            <label for="inputCall1" class=" peers peer-greed js-sb ai-c" style="padding: 0;">
+              <span class="peer peer-greed">Facebook</span>
+            </label>
+          </div>
+
+          <div class="checkbox checkbox-circle checkbox-info peers ai-c" style="display: inline-block !important; min-width: 100px;">
+            <input type="checkbox" ng-model="alertSetting.socialAccount.twitter" class="peer">
+            <label for="inputCall1" class=" peers peer-greed js-sb ai-c" style="padding: 0;">
+              <span class="peer peer-greed">Twitter</span>
+            </label>
+          </div>
+
+          <div class="checkbox checkbox-circle checkbox-info peers ai-c" style="display: inline-block !important; min-width: 100px;">
+            <input type="checkbox" ng-model="alertSetting.socialAccount.instagram" class="peer">
+            <label for="inputCall1" class=" peers peer-greed js-sb ai-c" style="padding: 0;">
+              <span class="peer peer-greed">Instagram</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="center">
+          <button type="submit" class="btn btn-primary" data-toggle="modal" data-target="#linkModal" style="width: 100px; margin-top: 20px;">Link</button>
+        </div>
+
+        <div class="modal fade" id="linkModal" tabindex="-1" role="dialog" aria-labelledby="linkModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="linkModalLabel">Confirm Your Linking</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <p>By clicking link, the following accounts will be linked</p>
+                <p>1</p>
+                <p>2</p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="linkSocialAccounts()">Link</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="errorMess" class="alert alert-danger display-none" role="alert">
+	{{errorMessage}}
+</div>

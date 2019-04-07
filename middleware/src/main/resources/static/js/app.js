@@ -28,6 +28,12 @@ scd.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
             controller: RegisterController
         })
 
+        .state('link_accounts', {
+            url: '/link_accounts',
+            templateUrl: 'partials/link_accounts.html',
+            controller: LinkAccountsController
+        })
+
         
         .state('home', {
             url: '/home',

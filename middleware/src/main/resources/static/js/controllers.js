@@ -25,7 +25,7 @@ function LoginController($rootScope, $scope, $location, UserService, Authenticat
     var userLogin = UserService.loginResource.login({username:$scope.user.email, password:$scope.user.password});
 
     userLogin.$promise.then(function(res){
-      $location.path('/home/dashboard');
+      $location.path('/link_accounts');
       if (res.error) {
         $scope.errorMessage = res.error;
         $("#errorMess").css("display", "block").fadeOut(10000);
@@ -92,6 +92,13 @@ function RegisterController($rootScope, $scope, $location, RegisterService, Auth
     }
 
     return true;
+  }
+}
+
+function LinkAccountsController($rootScope, $scope, $location, UserService) {
+
+  $scope.linkSocialAccounts = function() {
+    $location.path('/home/dashboard');
   }
 }
 
