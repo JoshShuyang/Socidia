@@ -163,6 +163,21 @@ public class FBScanner {
     }
     public void prepareAndSend() {
         String policyType;
+        String queryString = String.format("select policy_name\n" +
+                "from policy, policy_rules, item_violate_rules, items\n" +
+                "where items.user_id = %s and \n" +
+                "\t\titems.id = item_violate_rules.item_id and \n" +
+                "\t\titem_violate_rules.rule_id = policy_rules.id and \n" +
+                "\t\tpolicy_rules.policy_id = policy.policy_id;", userId);
+        try {
+            Connection conn = DriverManager.getConnection(dataSource, username, password);;
+            Statement stmt = null;
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(queryString);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
 
         mailSender.send("vickywenqiwang@gmail.com", "profile change", lastScanDate, "Facebook");
     }
