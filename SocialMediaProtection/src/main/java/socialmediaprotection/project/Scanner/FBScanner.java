@@ -17,6 +17,7 @@ import socialmediaprotection.project.scheduler.ScheduledScan;
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.Date;
 
@@ -162,24 +163,67 @@ public class FBScanner {
         }
     }
     public void prepareAndSend() {
-        String policyType;
-        String queryString = String.format("select policy_name\n" +
-                "from policy, policy_rules, item_violate_rules, items\n" +
-                "where items.user_id = %s and \n" +
-                "\t\titems.id = item_violate_rules.item_id and \n" +
-                "\t\titem_violate_rules.rule_id = policy_rules.id and \n" +
-                "\t\tpolicy_rules.policy_id = policy.policy_id;", userId);
+        String policyType = "policyType";
+        StringBuilder sb = new StringBuilder();
         try {
+            String queryString = String.format("select policy_name\n" +
+                    "from policy, policy_rules, item_violate_rules, items\n" +
+                    "where items.user_id = %s and \n" +
+                    "\t\titems.id = item_violate_rules.item_id and \n" +
+                    "\t\titem_violate_rules.rule_id = policy_rules.id and \n" +
+                    "\t\tpolicy_rules.policy_id = policy.policy_id;", userId);
+            log.info("policyType query string is " + queryString);
             Connection conn = DriverManager.getConnection(dataSource, username, password);;
             Statement stmt = null;
             stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(queryString);
+            while (rs.next()) {
+                sb.append(rs.getString(1)).append("    ");
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        policyType = sb.toString().equals("") ? "N/A" : sb.toString();
 
 
-        mailSender.send("vickywenqiwang@gmail.com", "profile change", lastScanDate, "Facebook");
+        String ruleType = "ruleType";
+        sb = new StringBuilder();
+        try {
+            String queryString = String.format("select `rule_name` \n" +
+                    "from `policy_rules`, `item_violate_rules`, `items` \n" +
+                    "where  `items`.`user_id` = %s and \n" +
+                    "\t\t`items`.`id` = `item_violate_rules`.`item_id` and \n" +
+                    "\t\t`item_violate_rules`.`rule_id` = `policy_rules`.`id`;", userId);
+            log.info("ruleType query string is " + queryString);
+            Connection conn = DriverManager.getConnection(dataSource, username, password);;
+            Statement stmt = null;
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(queryString);
+            while (rs.next()) {
+                sb.append(rs.getString(1)).append("    ");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        ruleType = sb.toString().equals("") ? "N/A" : sb.toString();
+
+        String recepient = "recipent";
+        try {
+            String queryString = String.format("select email from user where id = %s;", userId);
+            log.info("ruleType query string is " + queryString);
+            Connection conn = DriverManager.getConnection(dataSource, username, password);;
+            Statement stmt = null;
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(queryString);
+            while (rs.next()) {
+                recepient = rs.getString(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        String ts = LocalDateTime.now().toString();
+        log.info("sending alert to " + recepient + "policy type is " + policyType + "rule type is " + ruleType + "time is " + ts);
+        mailSender.send(recepient, policyType, ts, ruleType, "Facebook");
     }
     public void sendSms(String targetNumber, String msg) {
         smsSender.send(targetNumber, msg);

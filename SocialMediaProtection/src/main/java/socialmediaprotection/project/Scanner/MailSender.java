@@ -46,13 +46,12 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Date;
 import java.util.Properties;
 import java.util.stream.Stream;
 
 public class MailSender {
 
-    public void send(String receipient, String policyType, Date ts, String accountType) {
+    public void send(String receipient, String policyType, String ts, String ruleType, String accountType) {
         // Recipient's email ID needs to be mentioned.
         String to = receipient;
 
@@ -110,7 +109,8 @@ public class MailSender {
             String html = readLineByLine("/Users/Vencci/Documents/SJSU Spring2019/CMPE 295B/Socidia/SocialMediaProtection/src/main/java/socialmediaprotection/project/Scanner/email.html");
             // send the HTML
            // message.setContent(String.format("<h1>This is HTML message. Policy Type is %s, Time: %s</h1>", policyType, ts.toString()), "text/html");
-            message.setContent(html, "text/html");
+            String content = String.format(html, ts);
+            message.setContent(content, "text/html");
 
 
             // Send message
