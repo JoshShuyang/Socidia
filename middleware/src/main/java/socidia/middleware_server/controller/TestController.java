@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,9 +33,13 @@ public class TestController {
     @Autowired
     @Qualifier("messageSource")
     private MessageSource messages;
+    @Autowired
+    private Environment env;
 
     @RequestMapping("/hello")
     public String hello() {
+        String s = env.getProperty("support.email");
+        System.out.println(s);
         return "Hello world!";
     }
 

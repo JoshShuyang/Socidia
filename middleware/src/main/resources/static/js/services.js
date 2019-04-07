@@ -3,7 +3,7 @@
 angular.module('RestApiServices', ['ngResource'])
 	.factory('UserService', function($resource) {
 		return {
-			loginResource: $resource('/middleware/login', {}, {login: {method: 'POST'}}),
+			loginResource: $resource('/login', {}, {login: {method: 'POST'}}),
 			changePasswordResource: $resource('/api/user', {}, {update: {method: 'PUT'}})
 		}
 	})
