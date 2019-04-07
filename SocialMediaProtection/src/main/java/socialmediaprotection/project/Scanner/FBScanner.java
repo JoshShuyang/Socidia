@@ -65,7 +65,7 @@ public class FBScanner {
         applyRulesToPost();
         dataPersistent();
         prepareAndSend();
-        //sendSms("+19196995879", "Hi there");
+       // sendSms("+19196995879", "Hi there");
     }
 
     private void dataPersistent() throws SQLException {
@@ -107,7 +107,7 @@ public class FBScanner {
             stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery("select * from items WHERE items.user_id = " + userId + " ORDER BY created_at DESC");
             while(rs.next()) {
-                String dateStr = rs.getString(7).toString();
+                String dateStr = rs.getString(6).toString();
 
                 try {
                     lastScanDate = inputFormat.parse(dateStr);
@@ -178,8 +178,9 @@ public class FBScanner {
             stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(queryString);
             while (rs.next()) {
-                sb.append(rs.getString(1)).append("    ");
+                sb.append(rs.getString(1)).append(", ");
             }
+            sb.deleteCharAt(sb.length() - 1);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -200,30 +201,32 @@ public class FBScanner {
             stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(queryString);
             while (rs.next()) {
-                sb.append(rs.getString(1)).append("    ");
+                sb.append(rs.getString(1)).append(", ");
             }
+            sb.deleteCharAt(sb.length() - 1);
         } catch (SQLException e) {
             e.printStackTrace();
         }
         ruleType = sb.toString().equals("") ? "N/A" : sb.toString();
 
-        String recepient = "recipent";
+        String recipient = "recipient";
         try {
             String queryString = String.format("select email from user where id = %s;", userId);
-            log.info("ruleType query string is " + queryString);
+            log.info("recipient email query string is " + queryString);
             Connection conn = DriverManager.getConnection(dataSource, username, password);;
             Statement stmt = null;
             stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(queryString);
             while (rs.next()) {
-                recepient = rs.getString(1);
+                recipient = rs.getString(1);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         String ts = LocalDateTime.now().toString();
-        log.info("sending alert to " + recepient + "policy type is " + policyType + "rule type is " + ruleType + "time is " + ts);
-        mailSender.send(recepient, policyType, ts, ruleType, "Facebook");
+        log.info("sending alert to " + recipient + "policy type is " + policyType + "rule type is " + ruleType + "time is " + ts);
+        //change vickywenqiwang@gmail.com to recipient, change facebook to accounttype
+        mailSender.send("vickywenqiwang@gmail.com", policyType, ts, ruleType, "Facebook");
     }
     public void sendSms(String targetNumber, String msg) {
         smsSender.send(targetNumber, msg);

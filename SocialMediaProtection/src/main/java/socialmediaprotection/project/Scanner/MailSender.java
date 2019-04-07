@@ -109,7 +109,10 @@ public class MailSender {
             String html = readLineByLine("/Users/Vencci/Documents/SJSU Spring2019/CMPE 295B/Socidia/SocialMediaProtection/src/main/java/socialmediaprotection/project/Scanner/email.html");
             // send the HTML
            // message.setContent(String.format("<h1>This is HTML message. Policy Type is %s, Time: %s</h1>", policyType, ts.toString()), "text/html");
-            String content = String.format(html, ts);
+            String content = html.replaceFirst("nowis2019-04-01", ts);
+            //content = content.replaceFirst("hereisaccounttype", accountType);
+            content = content.replaceFirst("hereispolicytype", policyType);
+            content = content.replaceFirst("hereisruletype", ruleType);
             message.setContent(content, "text/html");
 
 
