@@ -1,23 +1,25 @@
 package socialmediaprotection.project;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import socialmediaprotection.project.Scanner.MailSender;
+import socialmediaprotection.project.Scanner.FBScanner;
+import socialmediaprotection.project.config.Configuraton;
+import socialmediaprotection.project.dataRepository.PolicyRepository;
+
+import java.io.IOException;
+import java.util.Properties;
 
 @SpringBootApplication
 @EnableScheduling
 public class ProjectApplication {
-	static MailSender mailSender = new MailSender();
 
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(ProjectApplication.class, args);
-//		String from = "zhaochenqi2013@gmail.com";
-//		String to = "vickywenqiwang@gmail.com";
-//		String subject = "JavaMailSender";
-//		String body = "Just-Testing!";
-		//mailSender.send();
-//		mailSender.sendMail(from, to, subject, body);
+
 
 
 //		Properties props = PropertiesLoaderUtils.loadAllProperties(Configuraton.CONFIGURATION_FILE);
@@ -34,8 +36,6 @@ public class ProjectApplication {
 //
 //		FBScanner fbScanner = new FBScanner(access_token, options ,29, d, u, p);
 //		fbScanner.scan();
-
-
 
 
 	}

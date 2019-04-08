@@ -62,21 +62,46 @@ public class FBScanner {
     public void scan() throws Exception {
         preScan();
         getPosts();
-        applyRulesToPost();
-        dataPersistent();
-        prepareAndSend();
-       // sendSms("+19196995879", "Hi there");
+        if (unScannedFBPosts.size() == 0) {
+            log.info("No new content!");
+        } else {
+            applyRulesToPost();
+            dataPersistent();
+        }
     }
 
     private void dataPersistent() throws SQLException {
+        log.info("Data Persistent!");
         Connection con = DriverManager.getConnection(dataSource, username, password);;
         Statement stmt = null;
+        int authorID = -1;
+        int itemID = -1;
 
         for (Map.Entry<Integer, FBPost> entry: violations.entrySet()) {
             try {
-                PreparedStatement preparedStmt = con.prepareStatement("INSERT INTO items (user_id, author_id, violate_rule_id, post_content) VALUES (" + userId + ", 1, " + entry.getKey() + ",'" + entry.getValue().getMessage() + "' )");
+                stmt = con.createStatement();
+                ResultSet rs = stmt.executeQuery("select * from authors WHERE author_id = '" + entry.getValue().getAuthor().getAuthorId() + "' AND author_name = '" + entry.getValue().getAuthor().getName() + "'");
+                if (!rs.next()) {
+                    PreparedStatement preparedStmtForAuthor = con.prepareStatement("INSERT INTO authors (author_id, author_name) VALUES ('" + entry.getValue().getAuthor().getAuthorId() + "', '" + entry.getValue().getAuthor().getName() + "')");
+                    preparedStmtForAuthor.execute();
+                }
+                ResultSet resultSet = stmt.executeQuery("select * from authors WHERE author_id = '" + entry.getValue().getAuthor().getAuthorId() + "' AND author_name = '" + entry.getValue().getAuthor().getName() + "'");
+                while (resultSet.next()) {
+                    authorID = resultSet.getInt(1);
+                }
+
+                PreparedStatement preparedStmt = con.prepareStatement("INSERT INTO items (user_id, author_id, post_content, page_name, item_type) VALUES (" + userId + ", " + authorID + ", '" + entry.getValue().getMessage() + "'," + "'Messi', '" + "FB" +"' )", Statement.RETURN_GENERATED_KEYS);
                 preparedStmt.execute();
 
+                try (ResultSet generatedKeys = preparedStmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        itemID = generatedKeys.getInt(1);
+                        PreparedStatement itemRuleStatement = con.prepareStatement("INSERT INTO item_violate_rules (item_id, rule_id) VALUES (" + itemID + "," + entry.getKey() + ")");
+                        itemRuleStatement.execute();
+                    }  else {
+                        throw new SQLException("Creating item failed, no ID obtained.");
+                    }
+                }
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -86,9 +111,10 @@ public class FBScanner {
     }
 
     private void applyRulesToPost() {
+        log.info("Apply rules to post!");
         for (FBPost fbPost: unScannedFBPosts) {
             for (Map.Entry<Integer, String> entry: policyRuleMapping.entrySet()) {
-                String fbMessage =fbPost.getMessage();
+                String fbMessage = fbPost.getMessage();
                 if (fbMessage != null && fbMessage.equals(entry.getValue())) {
                     violations.put(entry.getKey(), fbPost);
                 }
@@ -131,10 +157,12 @@ public class FBScanner {
 
                 while(rs.next()) {
                     int id = rs.getInt(1);
-                    String content = rs.getString(5);
+                    String content = rs.getString(4);
                     policyRuleMapping.put(id, content);
                 }
             }
+
+            con.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -151,10 +179,12 @@ public class FBScanner {
         }
 
         excluedeScannedPost();
+
+        log.info("The total unscanned post is {}", this.unScannedFBPosts.size());
     }
 
     private void excluedeScannedPost() {
-        System.out.println("lastScanDate: " + lastScanDate);
+        log.info("lastScanDate: {}", lastScanDate);
         log.debug("Last Scanned Item for userID: " + userId + " with Date: " + lastScanDate);
         for (FBPost fbPost: fbPosts) {
             if (!fbPost.getDate().before(lastScanDate)) {
