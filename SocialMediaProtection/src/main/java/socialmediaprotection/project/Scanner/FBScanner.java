@@ -169,9 +169,10 @@ public class FBScanner {
             String queryString = String.format("select policy_name\n" +
                     "from policy, policy_rules, item_violate_rules, items\n" +
                     "where items.user_id = %s and \n" +
+                    "\t\titems.updated_at > '%s' and \n" +
                     "\t\titems.id = item_violate_rules.item_id and \n" +
                     "\t\titem_violate_rules.rule_id = policy_rules.id and \n" +
-                    "\t\tpolicy_rules.policy_id = policy.policy_id;", userId);
+                    "\t\tpolicy_rules.policy_id = policy.policy_id;", userId, lastScanDate.toString());
             log.info("policyType query string is " + queryString);
             Connection conn = DriverManager.getConnection(dataSource, username, password);;
             Statement stmt = null;
@@ -193,8 +194,9 @@ public class FBScanner {
             String queryString = String.format("select `rule_name` \n" +
                     "from `policy_rules`, `item_violate_rules`, `items` \n" +
                     "where  `items`.`user_id` = %s and \n" +
+                    "\t\t`items`.`updated_at` > '%s' and \n" +
                     "\t\t`items`.`id` = `item_violate_rules`.`item_id` and \n" +
-                    "\t\t`item_violate_rules`.`rule_id` = `policy_rules`.`id`;", userId);
+                    "\t\t`item_violate_rules`.`rule_id` = `policy_rules`.`id`;", userId, lastScanDate.toString());
             log.info("ruleType query string is " + queryString);
             Connection conn = DriverManager.getConnection(dataSource, username, password);;
             Statement stmt = null;
@@ -208,6 +210,27 @@ public class FBScanner {
             e.printStackTrace();
         }
         ruleType = sb.toString().equals("") ? "N/A" : sb.toString();
+
+        String accountType = "accountType";
+        sb = new StringBuilder();
+        try {
+            String queryString = String.format("select item_type\n" +
+                    "from items\n" +
+                    "where items.user_id = %s and " +
+                    "items.updated_at > '%s';", userId, lastScanDate.toString());
+            log.info("accountType query string is " + queryString);
+            Connection conn = DriverManager.getConnection(dataSource, username, password);;
+            Statement stmt = null;
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(queryString);
+            while (rs.next()) {
+                sb.append(rs.getString(1)).append(", ");
+            }
+            sb.delete(sb.length() - 2, sb.length());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        accountType = sb.toString().equals("") ? "N/A" : sb.toString();
 
         String recipient = "recipient";
         try {
@@ -224,9 +247,9 @@ public class FBScanner {
             e.printStackTrace();
         }
         String ts = LocalDateTime.now().toString();
-        log.info("sending alert to " + recipient + "policy type is " + policyType + "rule type is " + ruleType + "time is " + ts);
-        //change vickywenqiwang@gmail.com to recipient, change facebook to accounttype
-        mailSender.send("vickywenqiwang@gmail.com", policyType, ts, ruleType, "Facebook");
+        log.info("sending alert to " + recipient + "policy type is " + policyType + "rule type is " + ruleType + "account type is" + accountType + "time is " + ts);
+        //change vickywenqiwang@gmail.com to recipient
+        mailSender.send("vickywenqiwang@gmail.com", policyType, ts, ruleType, accountType);
     }
     public void sendSms(String targetNumber, String msg) {
         smsSender.send(targetNumber, msg);
