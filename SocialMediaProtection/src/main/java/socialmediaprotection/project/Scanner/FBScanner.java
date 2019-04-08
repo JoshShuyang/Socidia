@@ -61,7 +61,7 @@ public class FBScanner {
 
     public void scan() throws Exception {
         preScan();
-     //   getPosts();
+        getPosts();
         applyRulesToPost();
         dataPersistent();
         prepareAndSend();
@@ -180,7 +180,7 @@ public class FBScanner {
             while (rs.next()) {
                 sb.append(rs.getString(1)).append(", ");
             }
-            sb.deleteCharAt(sb.length() - 1);
+            sb.delete(sb.length() - 2, sb.length());
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -203,7 +203,7 @@ public class FBScanner {
             while (rs.next()) {
                 sb.append(rs.getString(1)).append(", ");
             }
-            sb.deleteCharAt(sb.length() - 1);
+            sb.delete(sb.length() - 2, sb.length());
         } catch (SQLException e) {
             e.printStackTrace();
         }
