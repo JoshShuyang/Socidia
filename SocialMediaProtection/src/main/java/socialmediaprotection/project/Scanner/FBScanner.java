@@ -1,8 +1,5 @@
 package socialmediaprotection.project.Scanner;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import socialmediaprotection.project.Scanner.Facebook.FBPost;
 import com.restfb.DefaultFacebookClient;
 import com.restfb.FacebookClient;
 import com.restfb.Parameter;
@@ -10,11 +7,17 @@ import com.restfb.Version;
 import com.restfb.json.JsonArray;
 import com.restfb.json.JsonObject;
 import com.restfb.json.JsonValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import socialmediaprotection.project.Scanner.Facebook.FBPost;
 import socialmediaprotection.project.scheduler.ScheduledScan;
 
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.Date;
 
@@ -37,7 +40,10 @@ public class FBScanner {
     private List<FBPost> unScannedFBPosts;
     private Map<Integer, String> policyRuleMapping;
     private Map<Integer, FBPost> violations;
-
+    @Autowired
+    @Qualifier("javasampleapproachMailSender")
+    public MailSender mailSender;
+    public SmsSender smsSender;
     public FBScanner(String access_token, String options, int userId, String dataSource, String username, String password) {
         facebookClient = new DefaultFacebookClient(access_token, Version.VERSION_2_11);
         this.options = options;
@@ -49,6 +55,8 @@ public class FBScanner {
         unScannedFBPosts = new ArrayList<>();
         policyRuleMapping = new HashMap<>();
         violations = new HashMap<>();
+        mailSender = new socialmediaprotection.project.Scanner.MailSender();
+        smsSender = new SmsSender();
     }
 
     public void scan() throws Exception {
@@ -184,4 +192,97 @@ public class FBScanner {
             }
         }
     }
+    public void prepareAndSend() {
+        String policyType = "policyType";
+        StringBuilder sb = new StringBuilder();
+        try {
+            String queryString = String.format("select policy_name\n" +
+                    "from policy, policy_rules, item_violate_rules, items\n" +
+                    "where items.user_id = %s and \n" +
+                    "\t\titems.updated_at > '%s' and \n" +
+                    "\t\titems.id = item_violate_rules.item_id and \n" +
+                    "\t\titem_violate_rules.rule_id = policy_rules.id and \n" +
+                    "\t\tpolicy_rules.policy_id = policy.policy_id;", userId, lastScanDate.toString());
+            log.info("policyType query string is " + queryString);
+            Connection conn = DriverManager.getConnection(dataSource, username, password);;
+            Statement stmt = null;
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(queryString);
+            while (rs.next()) {
+                sb.append(rs.getString(1)).append(", ");
+            }
+            sb.delete(sb.length() - 2, sb.length());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        policyType = sb.toString().equals("") ? "N/A" : sb.toString();
+
+
+        String ruleType = "ruleType";
+        sb = new StringBuilder();
+        try {
+            String queryString = String.format("select `rule_name` \n" +
+                    "from `policy_rules`, `item_violate_rules`, `items` \n" +
+                    "where  `items`.`user_id` = %s and \n" +
+                    "\t\t`items`.`updated_at` > '%s' and \n" +
+                    "\t\t`items`.`id` = `item_violate_rules`.`item_id` and \n" +
+                    "\t\t`item_violate_rules`.`rule_id` = `policy_rules`.`id`;", userId, lastScanDate.toString());
+            log.info("ruleType query string is " + queryString);
+            Connection conn = DriverManager.getConnection(dataSource, username, password);;
+            Statement stmt = null;
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(queryString);
+            while (rs.next()) {
+                sb.append(rs.getString(1)).append(", ");
+            }
+            sb.delete(sb.length() - 2, sb.length());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        ruleType = sb.toString().equals("") ? "N/A" : sb.toString();
+
+        String accountType = "accountType";
+        sb = new StringBuilder();
+        try {
+            String queryString = String.format("select item_type\n" +
+                    "from items\n" +
+                    "where items.user_id = %s and " +
+                    "items.updated_at > '%s';", userId, lastScanDate.toString());
+            log.info("accountType query string is " + queryString);
+            Connection conn = DriverManager.getConnection(dataSource, username, password);;
+            Statement stmt = null;
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(queryString);
+            while (rs.next()) {
+                sb.append(rs.getString(1)).append(", ");
+            }
+            sb.delete(sb.length() - 2, sb.length());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        accountType = sb.toString().equals("") ? "N/A" : sb.toString();
+
+        String recipient = "recipient";
+        try {
+            String queryString = String.format("select email from user where id = %s;", userId);
+            log.info("recipient email query string is " + queryString);
+            Connection conn = DriverManager.getConnection(dataSource, username, password);;
+            Statement stmt = null;
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(queryString);
+            while (rs.next()) {
+                recipient = rs.getString(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        String ts = LocalDateTime.now().toString();
+        log.info("sending alert to " + recipient + "policy type is " + policyType + "rule type is " + ruleType + "account type is" + accountType + "time is " + ts);
+        //change vickywenqiwang@gmail.com to recipient
+        mailSender.send("vickywenqiwang@gmail.com", policyType, ts, ruleType, accountType);
+    }
+    public void sendSms(String targetNumber, String msg) {
+        smsSender.send(targetNumber, msg);
+    }
+
 }
