@@ -67,6 +67,7 @@ public class FBScanner {
         Connection con = DriverManager.getConnection(dataSource, username, password);;
         Statement stmt = null;
         int authorID = -1;
+        int itemID = -1;
 
         for (Map.Entry<Integer, FBPost> entry: violations.entrySet()) {
             try {
@@ -80,9 +81,19 @@ public class FBScanner {
                 while (resultSet.next()) {
                     authorID = resultSet.getInt(1);
                 }
-                
-                PreparedStatement preparedStmt = con.prepareStatement("INSERT INTO items (user_id, author_id, post_content, page_name, item_type) VALUES (" + userId + ", " + authorID + ", '" + entry.getValue().getMessage() + "'," + "'Messi', '" + "FB" +"' )");
+
+                PreparedStatement preparedStmt = con.prepareStatement("INSERT INTO items (user_id, author_id, post_content, page_name, item_type) VALUES (" + userId + ", " + authorID + ", '" + entry.getValue().getMessage() + "'," + "'Messi', '" + "FB" +"' )", Statement.RETURN_GENERATED_KEYS);
                 preparedStmt.execute();
+
+                try (ResultSet generatedKeys = preparedStmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        itemID = generatedKeys.getInt(1);
+                        PreparedStatement itemRuleStatement = con.prepareStatement("INSERT INTO item_violate_rules (item_id, rule_id) VALUES (" + itemID + "," + entry.getKey() + ")");
+                        itemRuleStatement.execute();
+                    }  else {
+                        throw new SQLException("Creating item failed, no ID obtained.");
+                    }
+                }
             } catch (SQLException e) {
                 e.printStackTrace();
             }
