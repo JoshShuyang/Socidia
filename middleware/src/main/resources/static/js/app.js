@@ -63,10 +63,10 @@ scd.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
             controller: RuleDetailController
         })
 
-        .state('home.alert_list', {
-            url: '/alert_list',
-            templateUrl: 'partials/home-alert_list.html',
-            controller: AlertListController
+        .state('home.item_list', {
+            url: '/item_list',
+            templateUrl: 'partials/home-item_list.html',
+            controller: ItemListController
         })
 
         .state('home.management', {

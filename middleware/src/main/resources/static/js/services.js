@@ -16,7 +16,15 @@ angular.module('RestApiServices', ['ngResource'])
 			getResource: $resource('/middleware/getSocialAccount')
 		}
 	})
-	.factory('PolicyService', function($resource) {
+	.factory('DashboardService', function($resource) {
+		var hostname = window.location.hostname;
+		hostname = 'http://' + hostname + ':8080';
+		return {
+			violationResource: $resource(hostname+'/:userId/userinsideinfo'),
+			getResource: $resource('/getSocialAccount')
+		}
+	})
+	.factory('PolicyService', function($resource) {s
 		return {
 			getResource: $resource('/:userId/policy'),
 			postResource: $resource('/policy'),

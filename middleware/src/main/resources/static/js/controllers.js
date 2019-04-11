@@ -133,10 +133,16 @@ function LinkAccountsController($rootScope, $scope, $location, LinkService, Auth
   }, 5000);
 }
 
-function DashboardController($rootScope, $scope) {
+function DashboardController($rootScope, $scope, DashboardService) {
   //Progress chart
   $('[data-toggle="tooltip"]').tooltip();
   $scope.passCheck = true;
+
+  var query = DashboardService.violationResource.query({userId:29});
+
+  query.$promise.then(function(res){
+    console.log(res);
+  })
 
   /*
   var query = HistoryService.get();
@@ -844,7 +850,7 @@ function RuleDetailController($rootScope, $scope, $timeout, $q) {
   });
 }
 
-function AlertListController($rootScope, $scope) {
+function ItemListController($rootScope, $scope) {
   //getSampleList();
   $scope.showHostDetail = false;
   $scope.hostSample = {};
