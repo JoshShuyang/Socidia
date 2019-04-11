@@ -32,6 +32,26 @@ public class PolicyController {
         return policyRepository.findAll();
     }
 
+    @PostMapping("/policy")
+    Policy createNewPolicy(@RequestBody Policy policy) {
+        return policyRepository.save(policy);
+    }
+
+    @PutMapping("/policy/{id}")
+    Policy replacePolicy(@RequestBody Policy newPolicy, @PathVariable Integer id) {
+        return policyRepository.findById(id)
+                .map(policy -> {
+                    policy.setUser_id(newPolicy.getUser_id());
+                    policy.setPolicy_name(newPolicy.getPolicy_name());
+                    policy.setNotification_type(newPolicy.getNotification_type());
+                    return policyRepository.save(policy);
+                })
+                .orElseGet(() -> {
+                    newPolicy.setId(id);
+                    return policyRepository.save(newPolicy);
+                });
+    }
+
     @GetMapping("/policy/{id}")
     public Optional<Policy> getPolicybyId(@PathVariable String id){
         int policyId = Integer.parseInt(id);
@@ -39,5 +59,9 @@ public class PolicyController {
         return policyRepository.findById(policyId);
     }
 
-
+    @DeleteMapping("/policy/{id}")
+    void deletePolicy(@PathVariable Integer id) {
+        policyRepository.deleteById(id);
+        logger.info("Policy has been deleted for policy_id: " + id);
+    }
 }

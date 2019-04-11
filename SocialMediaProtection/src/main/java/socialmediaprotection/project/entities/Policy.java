@@ -14,15 +14,33 @@ public class Policy {
 
     private int user_id;
     private String policy_name;
-    private Date created_at;
-    private Date updated_at;
-
+    private int notification_type;
 
     public Policy() {
     }
 
     public Policy(int userId) {
+        this.user_id = userId;
+    }
 
+    public Policy(int userId, String policy_name) {
+        this.user_id = userId;
+        this.policy_name = policy_name;
+        this.notification_type = 0;
+    }
+
+    public Policy(int userId, String policy_name, int notification_type) {
+        this.user_id = userId;
+        this.policy_name = policy_name;
+        this.notification_type = notification_type;
+    }
+
+    public int getNotification_type() {
+        return notification_type;
+    }
+
+    public void setNotification_type(int notification_type) {
+        this.notification_type = notification_type;
     }
 
     public int getId() {
@@ -49,30 +67,13 @@ public class Policy {
         this.policy_name = policy_name;
     }
 
-    public Date getCreated_at() {
-        return created_at;
-    }
-
-    public void setCreated_at(Date created_at) {
-        this.created_at = created_at;
-    }
-
-    public Date getUpdated_at() {
-        return updated_at;
-    }
-
-    public void setUpdated_at(Date updated_at) {
-        this.updated_at = updated_at;
-    }
-
     @Override
     public String toString() {
-        return "Policy {" +
-                "policy_id=" + id +
-                ", user_id='" + user_id + '\'' +
+        return "Policy{" +
+                "id=" + id +
+                ", user_id=" + user_id +
                 ", policy_name='" + policy_name + '\'' +
-                ", updated_at='" + updated_at + '\'' +
-                ", created_at='" + created_at + '\'' +
+                ", notification_type=" + notification_type +
                 '}';
     }
 }
