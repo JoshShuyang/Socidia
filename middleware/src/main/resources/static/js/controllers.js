@@ -133,16 +133,70 @@ function LinkAccountsController($rootScope, $scope, $location, LinkService, Auth
   }, 5000);
 }
 
-function DashboardController($rootScope, $scope, DashboardService) {
+function DashboardController($rootScope, $scope, $q, DashboardService, PolicyService, RuleService, ItemService) {
   //Progress chart
   $('[data-toggle="tooltip"]').tooltip();
   $scope.passCheck = true;
 
-  var query = DashboardService.violationResource.query({userId:29});
+  var query1 = DashboardService.violationResource.query({userId:29});
+  var query2 = PolicyService.getResource.query({userId:29});
 
-  query.$promise.then(function(res){
-    console.log(res);
+   $q.all([query1.$promise, query2.$promise])
+  .then(function(resList){
+    $scope.policyHistory = resList[0];
+    $scope.totalPolicy = resList[1];
+    $scope.curPolicyStatus = $scope.policyHistory[$scope.policyHistory.length - 1];
+
+    var ruleMap = {};
+    var vRulemap = {};
+/*
+    $scope.totalPolicy.forEach(function(ele){
+      var query = RuleService.getRulesResource.query({policyId:ele.id});
+
+      query.$promise.then(function(res){
+        res.forEach(function(e){
+          ruleMap[e.id] = true;
+        });
+      }).catch(function(err){})
+    })
+
+    var itemList = resList[2];
+
+    itemList.forEach(function(ele){
+      var query = ItemService.getItemViolateRulesResource.query({itemId:ele.id});
+
+      query.$promise.then(function(res){
+        res.forEach(function(ele){
+          vRulemap[ele.rule_id] = true;
+        });
+      }).catch(function(err){})
+    });
+*/
+
+    $scope.curStatus = {
+      pTotal: $scope.totalPolicy.length,
+      pNumOfpass: $scope.totalPolicy.length - $scope.curPolicyStatus.number_policy_violation,
+      rTotal: 14,
+      rNumOfpass: 10
+    };
+    var pPassRate = $scope.curStatus.pNumOfpass/$scope.curStatus.pTotal;
+    var rPassRate = $scope.curStatus.rNumOfpass/$scope.curStatus.rTotal;
+    $scope.curStatus.pPassRate = $rootScope.decimalToPercent(pPassRate, 2);
+    $scope.curStatus.rPassRate = $rootScope.decimalToPercent(rPassRate, 2);
+
+    $scope.passCheck = ($scope.curStatus.pNumOfpass ===  $scope.curStatus.pTotal) ? true : false;
+  }).catch(function(errList){
   })
+
+  $scope.overall = {
+    pPassRate: 92.23,
+    rPassRate: 84.10
+  };
+
+  $scope.daily = {
+    pPassRate: 90.12,
+    rPassRate: 86.34
+  };
 
   /*
   var query = HistoryService.get();
@@ -264,248 +318,251 @@ function DashboardController($rootScope, $scope, DashboardService) {
     });
   });
   */
-
-  $('.easy-pie-chart').easyPieChart({
-    onStep: function(from, to, percent) {
-      this.el.children[0].innerHTML = Math.floor(percent*100)/100 + '%';
-    },
-  });
+  setTimeout(function(){
+      if ($('.easy-pie-chart').length > 0) {
+        $('.easy-pie-chart').easyPieChart({
+          onStep: function(from, to, percent) {
+            this.el.children[0].innerHTML = Math.floor(percent*100)/100 + '%';
+          },
+        });
+      }
+    }, 300);
 
   //Trend Chart
 
     var hisPassRate = [
       [
           1167609600000,
-          0.9537
+          0.9123
       ],
       [
           1167696000000,
-          0.9537
+          0.9037
       ],
       [
           1167782400000,
-          0.9559
+          0.9159
       ],
       [
           1167868800000,
-          0.9631
+          0.8731
       ],
       [
           1167955200000,
-          0.9644
+          0.8944
       ],
       [
           1168214400000,
-          0.969
+          0.913
       ],
       [
           1168300800000,
-          0.9683
+          0.9023
       ],
       [
           1168387200000,
-          0.97
+          0.8423
       ],
       [
           1168473600000,
-          0.9703
+          0.842
       ],
       [
           1168560000000,
-          0.9757
+          0.8564
       ],
       [
           1168819200000,
-          0.9728
+          0.8843
       ],
       [
           1168905600000,
-          0.9721
+          0.853
       ],
       [
           1168992000000,
-          0.9748
+          0.8932
       ],
       [
           1169078400000,
-          0.974
+          0.9123
       ],
       [
           1169164800000,
-          0.9718
+          0.9234
       ],
       [
           1169424000000,
-          0.9731
+          0.9345
       ],
       [
           1169510400000,
-          0.967
+          0.9566
       ],
       [
           1169596800000,
-          0.969
+          0.923
       ],
       [
           1169683200000,
-          0.9706
+          0.932
       ],
       [
-		1169769600000,
-		0.9752
-	],
-	[
-		1170028800000,
-		0.974
-	],
-	[
-		1170115200000,
-		0.971
-	],
-	[
-		1170201600000,
-		0.9721
-	],
-	[
-		1170288000000,
-		0.9681
-	],
-	[
-		1170374400000,
-		0.9681
-	],
-	[
-		1170633600000,
-		0.9738
-	],
-	[
-		1170720000000,
-		0.972
-	],
-	[
-		1170806400000,
-		0.9701
-	],
-	[
-		1170892800000,
-		0.9699
-	],
-	[
-		1170979200000,
-		0.9689
-	],
-	[
-		1171238400000,
-		0.9719
-	],
-	[
-		1171324800000,
-		0.968
-	],
-	[
-		1171411200000,
-		0.9645
-	],
-	[
-		1171497600000,
-		0.9613
-	],
-	[
-		1171584000000,
-		0.9624
-	],
-	[
-		1171843200000,
-		0.9616
-	],
-	[
-		1171929600000,
-		0.9608
-	],
-	[
-		1172016000000,
-		0.9608
-	],
-	[
-		1172102400000,
-		0.9631
-	],
-	[
-		1172188800000,
-		0.9615
-	],
-	[
-		1172448000000,
-		0.96
-	],
-	[
-		1172534400000,
-		0.956
-	],
-	[
-		1172620800000,
-		0.957
-	],
-	[
-		1172707200000,
-		0.9562
-	],
-	[
-		1172793600000,
-		0.9598
-	],
-	[
-		1173052800000,
-		0.9645
-	],
-	[
-		1173139200000,
-		0.9635
-	],
-	[
-		1173225600000,
-		0.9614
-	],
-	[
-		1173312000000,
-		0.9604
-	],
-	[
-		1173398400000,
-		0.9603
-	],
-	[
-		1173657600000,
-		0.9602
-	],
-	[
-		1173744000000,
-		0.9566
-	],
-	[
-		1173830400000,
-		0.9587
-	],
-	[
-		1173916800000,
-		0.9562
-	],
-	[
-		1174003200000,
-		0.9506
-	],
-	[
-		1174262400000,
-		0.9518
-	],
-	[
-		1174348800000,
-		0.9522
-	],
-	[
-		1174435200000,
-		0.9524
-	]
+    		1169769600000,
+    		0.9123
+    	],
+    	[
+    		1170028800000,
+    		0.932
+    	],
+    	[
+    		1170115200000,
+    		0.9012
+    	],
+    	[
+    		1170201600000,
+    		0.9023
+    	],
+    	[
+    		1170288000000,
+    		0.9321
+    	],
+    	[
+    		1170374400000,
+    		0.9212
+    	],
+    	[
+    		1170633600000,
+    		0.9012
+    	],
+    	[
+    		1170720000000,
+    		0.8923
+    	],
+    	[
+    		1170806400000,
+    		0.9012
+    	],
+    	[
+    		1170892800000,
+    		0.9323
+    	],
+    	[
+    		1170979200000,
+    		0.9021
+    	],
+    	[
+    		1171238400000,
+    		0.9042
+    	],
+    	[
+    		1171324800000,
+    		0.932
+    	],
+    	[
+    		1171411200000,
+    		0.9231
+    	],
+    	[
+    		1171497600000,
+    		0.9021
+    	],
+    	[
+    		1171584000000,
+    		0.9123
+    	],
+    	[
+    		1171843200000,
+    		0.9321
+    	],
+    	[
+    		1171929600000,
+    		0.9092
+    	],
+    	[
+    		1172016000000,
+    		0.9126
+    	],
+    	[
+    		1172102400000,
+    		0.909
+    	],
+    	[
+    		1172188800000,
+    		0.921
+    	],
+    	[
+    		1172448000000,
+    		0.9023
+    	],
+    	[
+    		1172534400000,
+    		0.8903
+    	],
+    	[
+    		1172620800000,
+    		0.8921
+    	],
+    	[
+    		1172707200000,
+    		0.9132
+    	],
+    	[
+    		1172793600000,
+    		0.8849
+    	],
+    	[
+    		1173052800000,
+    		0.9403
+    	],
+    	[
+    		1173139200000,
+    		0.9232
+    	],
+    	[
+    		1173225600000,
+    		0.9123
+    	],
+    	[
+    		1173312000000,
+    		0.9021
+    	],
+    	[
+    		1173398400000,
+    		0.9043
+    	],
+    	[
+    		1173657600000,
+    		0.9501
+    	],
+    	[
+    		1173744000000,
+    		0.8923
+    	],
+    	[
+    		1173830400000,
+    		0.921
+    	],
+    	[
+    		1173916800000,
+    		0.9103
+    	],
+    	[
+    		1174003200000,
+    		0.929
+    	],
+    	[
+    		1174262400000,
+    		0.9421
+    	],
+    	[
+    		1174348800000,
+    		0.9343
+    	],
+    	[
+    		1174435200000,
+    		0.909
+    	]
     ];
 /*
     $scope.hisInfoList.forEach(function(build){
@@ -581,95 +638,20 @@ function DashboardController($rootScope, $scope, DashboardService) {
 
 function PolicyListController($scope, PolicyService) {
   
-  var query = PolicyService.getResource.get({userId:rootScope.globals.currentUser.userId});
+  var query = PolicyService.getResource.query({userId:29});
 
   query.$promise.then(function(res) {
+    $scope.historicalData = res;
     angular.element(document).ready(function() {
       var dTable = $('#buildsDataTable');
       dTable.DataTable({"order": [[ 0, "desc" ]]});
     });
 
   });
-
-    $scope.historicalData = [
-			{
-				'build_id': 1,
-				'pass_check': true,
-				'created_on': '11-08-2018 5:39PM',
-				'updated_on': '11-08-2018 5:39PM'
-			},
-            {
-				'build_id': 2,
-				'pass_check': true,
-				'created_on': '11-08-2018 5:39PM',
-				'updated_on': '11-08-2018 5:39PM'
-			},
-            {
-				'build_id': 3,
-				'pass_check': true,
-				'created_on': '11-08-2018 5:39PM',
-				'updated_on': '11-08-2018 5:39PM'
-			},
-            {
-				'build_id': 4,
-				'pass_check': true,
-				'created_on': '11-08-2018 5:39PM',
-				'updated_on': '11-08-2018 5:39PM'
-			},
-            {
-				'build_id': 5,
-				'pass_check': true,
-				'created_on': '11-08-2018 5:39PM',
-				'updated_on': '11-08-2018 5:39PM'
-			},
-            {
-				'build_id': 6,
-				'pass_check': true,
-				'created_on': '11-08-2018 5:39PM',
-				'updated_on': '11-08-2018 5:39PM'
-			},
-            {
-				'build_id': 7,
-				'pass_check': false,
-				'created_on': '11-08-2018 5:39PM',
-				'updated_on': '11-08-2018 5:39PM'
-			},
-            {
-				'build_id': 8,
-				'pass_check': true,
-				'created_on': '11-08-2018 5:39PM',
-				'updated_on': '11-08-2018 5:39PM'
-			},
-            {
-				'build_id': 9,
-				'pass_check': true,
-				'created_on': '11-08-2018 5:39PM',
-				'updated_on': '11-08-2018 5:39PM'
-			},
-            {
-				'build_id': 10,
-				'pass_check': true,
-				'created_on': '11-08-2018 5:39PM',
-				'updated_on': '11-08-2018 5:39PM'
-			},
-            {
-				'build_id': 11,
-				'pass_check': true,
-				'created_on': '11-08-2018 5:39PM',
-				'updated_on': '11-08-2018 5:39PM'
-			},
-            {
-				'build_id': 12,
-				'pass_check': true,
-				'created_on': '11-08-2018 5:39PM',
-				'updated_on': '11-08-2018 5:39PM'
-			}
-		]
 }
 
-function PolicyDetailController($rootScope, $scope, $timeout) {
-  $scope.buildId = $rootScope.$stateParams.policyId;
-  $scope.passCheck = true;
+function PolicyDetailController($rootScope, $scope, $timeout, $q, PolicyService, RuleService) {
+  $scope.policyId = $rootScope.$stateParams.policyId;
 
   /*
   var query = BuildService.get({buildId: $scope.buildId});
@@ -720,77 +702,42 @@ function PolicyDetailController($rootScope, $scope, $timeout) {
     });
   });*/
 
-  $scope.alertSetting = {
-    socialAccount: {
-      facebook: true,
-      twitter: false,
-      instagram: false
-    },
-    alertMethod: {
-      email: true,
-      text: false,
-      phone: false
-    }
-  }
+  var query1 = PolicyService.getPolicyResource.get({policyId: $scope.policyId}); 
+  var query2 = RuleService.getRulesResource.query({policyId: $scope.policyId});
 
-  $scope.buildData = {
-      buildId: $scope.buildId,
-      buildDate: '11-08-2018 5:39PM',
-      numOfpass: 5,
-      total: 5,
-      hostPassRate: 100,
-      newHostNum: 1,
-      newHostRate: 20
+  $q.all([query1.$promise, query2.$promise])
+  .then(function(resList){
+    $scope.policyInfo = resList[0];
+    $scope.ruleList = resList[1];
+
+    $scope.policyData = {
+      numOfpass: $scope.ruleLis.length,
+      total: $scope.ruleLis.length,
+      hostPassRate: 100
     };
 
-  $scope.hostsRegData = [
-      {
-        hostId: 1,
-        ip: 'Rule Content 1',
-        matchRes: true
+    $scope.alertSetting = {
+      socialAccount: {
+        facebook: true,
+        twitter: false,
+        instagram: false
       },
-      {
-        hostId: 2,
-        ip: 'Rule Content 2',
-        matchRes: true
-      },
-      {
-        hostId: 3,
-        ip: 'Rule Content 3',
-        matchRes: true
-      },
-      {
-        hostId: 4,
-        ip: 'Rule Content 4',
-        matchRes: true
-      },
-      {
-        hostId: 5,
-        ip: 'Rule Content 5',
-        matchRes: true
-      },
-  ];
-
-  angular.element(document).ready(function() {
-  var dTable = $('#hostsDataTable');
-  dTable.DataTable();
-});
+      alertMethod: {
+        email: $scope.policyInfo.notification_type === 0 ? true : false,
+        text: $scope.policyInfo.notification_type === 1 ? true : false,
+        phone: false
+      }
+    }
+    
+    angular.element(document).ready(function() {
+    var dTable = $('#hostsDataTable');
+    dTable.DataTable();
+  });
+  })
+  .catch(function(errList){
+  });
 
   $('[data-toggle="tooltip"]').tooltip();
-
-  $scope.$on('$viewContentLoaded', function(event)
-  { 
-    $timeout(function() {
-      $rootScope.scrollTo('buildDetial');
-      if ($scope.jumpToHostDetial)
-        $rootScope.scrollTo('hostDetial');
-    }, 0);
-  });
-
-  $scope.$on('jumpToHostDetial', function(event)
-  { 
-    $scope.jumpToHostDetial = true;
-  });
 }
 
 function RuleDetailController($rootScope, $scope, $timeout, $q) {

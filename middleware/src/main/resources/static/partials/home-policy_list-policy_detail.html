@@ -5,28 +5,18 @@
   		<div class="bgc-white p-20 bd">
         <div class="flex col-md-12">
           <div class="col-md-6 right">
-            <h6>Policy Check Result:</h6>
-          </div>
-          
-          <div class="col-md-6 icon-holder">
-            <i ng-show="passCheck" class="check-pass text-success ti-check" data-toggle="tooltip" data-placement="bottom" title="Policy passed!"></i>
-            <i ng-show="!passCheck" class="check-fail text-danger ti-alert" data-toggle="tooltip" data-placement="bottom" title="Policy failed to pass"></i>
-          </div>
-        </div>
-        <div class="flex col-md-12">
-          <div class="col-md-6 right">
             <h6>Policy ID:</h6>
           </div>
           <div class="col-md-6 ">
-            <h6>{{buildData.buildId}}</h6>
+            <h6>{{policyInfo.id}}</h6>
           </div>
         </div>
         <div class="flex col-md-12">
           <div class="col-md-6 right">
-            <h6>Updated Date:</h6>
+            <h6>Policy name:</h6>
           </div>
           <div class="col-md-6 ">
-            <h6>{{buildData.buildDate}}</h6>
+            <h6>{{policyInfo.policy_name}}</h6>
           </div>
         </div>
 
@@ -35,19 +25,11 @@
             <!-- Progress Bars -->
             <div class="layers">
               <div class="layer w-100">
-                <h6 class="mB-5">{{buildData.numOfpass}}/{{buildData.total}}</h6>
+                <h6 class="mB-5">{{policyData.numOfpass}}/{{policyData.total}}</h6>
                 <small class="fw-600 c-grey-700"># of pass / # of total rules</small>
-                <span class="pull-right c-grey-600 fsz-sm">{{buildData.hostPassRate}}%</span>
+                <span class="pull-right c-grey-600 fsz-sm">{{policyData.hostPassRate}}%</span>
                 <div class="progress mT-10">
-                  <div class="progress-bar bgc-deep-purple-500" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" ng-style="{width: buildData.hostPassRate + '%'}"></div>
-                </div>
-              </div>
-              <div class="layer w-100">
-                <h6 class="mB-5">{{buildData.newHostNum}}/{{buildData.total}}</h6>
-                <small class="fw-600 c-grey-700"># of new end points / # of total rules</small>
-                <span class="pull-right c-grey-600 fsz-sm">{{buildData.newHostRate}}%</span>
-                <div class="progress mT-10">
-                  <div class="progress-bar bgc-light-blue-500" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" ng-style="{width: buildData.newHostRate + '%'}"></div>
+                  <div class="progress-bar bgc-deep-purple-500" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" ng-style="{width: policyData.hostPassRate + '%'}"></div>
                 </div>
               </div>
             </div>
@@ -122,25 +104,22 @@
             <thead class="thead-dark">
               <tr>
                 <th>Rule ID</th>
+                <th>Rule Name</th>
                 <th>Rule Content</th>
-                <th>Rule Pass Result</th>
               </tr>
             </thead>
             <tbody>
-              <tr class="pointer hov" ng-repeat="host in hostsRegData" ui-sref=".rule_detail({ruleId: host.hostId})" ng-click="scrollTo('hostDetial')">
-                <td>{{host.hostId}}</td>
-                <td>{{host.ip}}</td>
-                <td>
-                	<span ng-show="host.matchRes" class="badge bgc-deep-purple-50 c-deep-purple-700 p-10 lh-0 tt-c badge-pill">{{host.matchRes ? 'Pass' : 'Fail'}}</span>
-                	<span ng-show="!host.matchRes" class="badge bgc-red-50 c-red-700 p-10 lh-0 tt-c badge-pill">{{host.matchRes ? 'Pass' : 'Fail'}}</span>
-          	    </td>
+              <tr class="pointer hov" ng-repeat="rule in ruleList">
+                <td>{{rule.id}}</td>
+                <td>{{rule.rule_name}}</td>
+                <td>{{rule.rule_content}}</td>
               </tr>
             </tbody>
             <tfoot>
               <tr>
                 <th>Rule ID</th>
+                <th>Rule Name</th>
                 <th>Rule Content</th>
-                <th>Rule Pass Result</th>
               </tr>
             </tfoot>
           </table>

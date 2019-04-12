@@ -9,28 +9,19 @@
             <thead class="thead-dark">
               <tr>
                 <th>Policy ID</th>
-                <th>Result</th>
-                <th>Created On</th>
-                <th>Updated On</th>
+                <th>Policy Name</th>
               </tr>
             </thead>
             <tbody>
-              <tr class="pointer hov td-overflow-hide" ng-repeat="his in historicalData" ui-sref=".policy_detail({policyId: his.build_id})" ng-click="scrollTo('buildDetial')">
-                <td>{{his.build_id}}</td>
-                <td>
-                  <span ng-show="his.pass_check" class="badge bgc-deep-purple-50 c-deep-purple-700 p-10 lh-0 tt-c badge-pill">{{his.pass_check ? 'Pass' : 'Fail'}}</span>
-                  <span ng-show="!his.pass_check" class="badge bgc-red-50 c-red-700 p-10 lh-0 tt-c badge-pill">{{his.pass_check ? 'Pass' : 'Fail'}}</span>
-                  </td>
-                <td>{{his.created_on}}</td>
-                <td>{{his.updated_on}}</td>
+              <tr class="pointer hov td-overflow-hide" ng-repeat="his in historicalData" ui-sref=".policy_detail({policyId: his.id})" ng-click="scrollTo('policyDetial')">
+                <td>{{his.id}}</td>
+                <td>{{his.policy_name}}</td>
               </tr>
             </tbody>
             <tfoot>
               <tr>
                 <th>Policy ID</th>
-                <th>Result</th>
-                <th>Created On</th>
-                <th>Updated On</th>
+                <th>Policy Name</th>
               </tr>
             </tfoot>
           </table>
@@ -38,5 +29,5 @@
       </div>
     </div>
   </div>
-  <div id="buildDetial" ui-view></div>
+  <div id="policyDetial" ui-view></div>
 </main>

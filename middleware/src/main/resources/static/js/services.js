@@ -20,15 +20,34 @@ angular.module('RestApiServices', ['ngResource'])
 		var hostname = window.location.hostname;
 		hostname = 'https://' +  hostname + ':8888';
 		return {
-			violationResource: $resource(hostname+'/:userId/userinsideinfo'),
-			getResource: $resource('/getSocialAccount')
+			violationResource: $resource(hostname+'/:userId/userinsideinfo')
 		}
 	})
-	.factory('PolicyService', function($resource) {s
+	.factory('PolicyService', function($resource) {
+		var hostname = window.location.hostname;
+		hostname = 'https://' +  hostname + ':8888';
 		return {
-			getResource: $resource('/:userId/policy'),
-			postResource: $resource('/policy'),
-			putResource: $resource('/policy/:policyId')
+			getResource: $resource(hostname+'/:userId/policy'),
+			getPolicyResource: $resource(hostname+'/policy/:policyId'),
+			postResource: $resource(hostname+'/policy'),
+			putResource: $resource(hostname+'/policy/:policyId')
+		}
+	})
+	.factory('RuleService', function($resource) {
+		var hostname = window.location.hostname;
+		hostname = 'https://' +  hostname + ':8888';
+		return {
+			getRulesResource: $resource(hostname+'/policy/:policyId/rules'),
+			getRuleDetailResource: $resource(hostname+'/policy_rule/:ruleId')
+		}
+	})
+	.factory('ItemService', function($resource) {
+		var hostname = window.location.hostname;
+		hostname = 'https://' +  hostname + ':8888';
+		return {
+			getItemsResource: $resource(hostname+'/:userId/item'),
+			getItemDetailResource: $resource(hostname+'/item/:itemId'),
+			getItemViolateRulesResource: $resource(hostname+'/item_violate_rule/:itemId')
 		}
 	})
 	.factory('ManagementService', function($resource) {
