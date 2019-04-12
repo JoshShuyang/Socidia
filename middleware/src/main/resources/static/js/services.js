@@ -18,7 +18,7 @@ angular.module('RestApiServices', ['ngResource'])
 	})
 	.factory('DashboardService', function($resource) {
 		var hostname = window.location.hostname;
-		hostname = 'http://' + hostname + ':8080';
+		hostname = 'https://' +  hostname + ':8888';
 		return {
 			violationResource: $resource(hostname+'/:userId/userinsideinfo'),
 			getResource: $resource('/getSocialAccount')
