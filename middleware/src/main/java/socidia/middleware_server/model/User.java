@@ -35,6 +35,9 @@ public class User {
     @JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private Set<Role> roles;
 
+    @Column
+    private String phoneNum;
+
     public User() {
     }
 
@@ -45,6 +48,23 @@ public class User {
         this.password = password;
         this.enabled = enabled;
         this.roles = roles;
+    }
+
+    public User(String username, @Email String email, Boolean emailVerified, String password, boolean enabled, Set<Role> roles, String phoneNum) {
+        this.username = username;
+        this.email = email;
+        this.emailVerified = emailVerified;
+        this.password = password;
+        this.enabled = enabled;
+        this.roles = roles;
+        this.phoneNum = phoneNum;
+    }
+
+    public User(String username, @Email String email, String password, String phoneNum) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.phoneNum = phoneNum;
     }
 
     public Long getId() {
@@ -101,5 +121,13 @@ public class User {
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
+    }
+
+    public String getPhoneNum() {
+        return phoneNum;
+    }
+
+    public void setPhoneNum(String phoneNum) {
+        this.phoneNum = phoneNum;
     }
 }

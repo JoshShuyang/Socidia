@@ -22,6 +22,8 @@ public class EmailVerificationToken {
 
     private Date expiryDate;
 
+    private boolean used;
+
     private Date calculateExpiryDate(int expiryTimeInMinutes) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Timestamp(cal.getTime().getTime()));
@@ -36,6 +38,7 @@ public class EmailVerificationToken {
         this.token = token;
         this.user = user;
         this.expiryDate = calculateExpiryDate(DURATION);
+        this.used = false;
     }
 
     public static int getDURATION() {
@@ -68,5 +71,13 @@ public class EmailVerificationToken {
 
     public void setExpiryDate(Date expiryDate) {
         this.expiryDate = expiryDate;
+    }
+
+    public boolean isUsed() {
+        return used;
+    }
+
+    public void setUsed(boolean used) {
+        this.used = used;
     }
 }

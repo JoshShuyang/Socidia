@@ -92,9 +92,18 @@
     <div class="email-content">
       <h5></h5>
       <h1 class="mB-30 fw-900 lh-1" style="font-size: 35px;color: #f44336;">error</h1>
-      <h3 class="mB-10 fsz-lg c-grey-900 fw-700 tt-c" th:text="'This token has expired' + ${token}"></h3>
-      <p class="mB-30 fsz-def c-grey-700">${message}</p>
-        <a href="{{goToUrl}}" class="go-btn">Go to web page</a>
+      <h3 class="mB-10 fsz-lg c-grey-900 fw-700 tt-c" th:text="'Token Number: ' + ${error.token}"></h3>
+      <p class="mB-30 fsz-def c-grey-700" th:text="${error.message}"></p>
+      <div th:if="${error.caseNum} eq '403'">
+        <a th:href="@{${error.link}}" class="go-btn">
+          <p th:text="${error.linkMessage}"></p>
+        </a>
+      </div>
+      <div th:if="${error.caseNum} eq '499'">
+        <a th:href="@{${error.link}(token=${error.token})}" class="go-btn">
+          <p th:text="${error.linkMessage}"></p>
+        </a>
+      </div>
     </div>
   </body>
 </html>
