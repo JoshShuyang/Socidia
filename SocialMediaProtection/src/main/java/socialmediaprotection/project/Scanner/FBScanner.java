@@ -44,6 +44,8 @@ public class FBScanner {
     @Qualifier("javasampleapproachMailSender")
     public MailSender mailSender;
     public SmsSender smsSender;
+    public String targetNum;
+    public int notifyType;
     public FBScanner(String access_token, String options, int userId, String dataSource, String username, String password) {
         facebookClient = new DefaultFacebookClient(access_token, Version.VERSION_2_11);
         this.options = options;
@@ -61,12 +63,20 @@ public class FBScanner {
 
     public void scan() throws Exception {
         preScan();
+
         getPosts();
         if (unScannedFBPosts.size() == 0) {
             log.info("No new content!");
         } else {
             applyRulesToPost();
             dataPersistent();
+            notifyType = getNotifyType();
+            if (notifyType == 0) {
+                sendMail();
+            } else {
+                targetNum = getTargetNum();
+                sendSms(targetNum, "Socidia: A new security threat was detected for your social account: Facebook. Log in to your Socidia user portal to view details and take actions.");
+            }
         }
     }
 
@@ -192,7 +202,7 @@ public class FBScanner {
             }
         }
     }
-    public void prepareAndSend() {
+    public void sendMail() {
         String policyType = "policyType";
         StringBuilder sb = new StringBuilder();
         try {
@@ -285,4 +295,40 @@ public class FBScanner {
         smsSender.send(targetNumber, msg);
     }
 
+    public int getNotifyType() {
+        int notifyType = 0;
+        try {
+            String queryString = String.format("select notification_type from policy where user_id = %s;", userId);
+            log.info("notification type query string is " + queryString);
+            Connection conn = DriverManager.getConnection(dataSource, username, password);;
+            Statement stmt = null;
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(queryString);
+            while (rs.next()) {
+                notifyType = Integer.parseInt(rs.getString(1));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return notifyType;
+    }
+
+    public String getTargetNum() {
+        String targetNum = "+19196995879";
+        try {
+            String queryString = String.format("select phone_num from user where id = %s;", userId);
+            log.info("target number query string is " + queryString);
+            Connection conn = DriverManager.getConnection(dataSource, username, password);;
+            Statement stmt = null;
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(queryString);
+            while (rs.next()) {
+                targetNum = rs.getString(1);
+            }
+            targetNum = "+1" + targetNum;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return targetNum;
+    }
 }

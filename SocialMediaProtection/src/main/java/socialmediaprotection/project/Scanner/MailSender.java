@@ -51,13 +51,13 @@ import java.util.stream.Stream;
 
 public class MailSender {
 
-    public void send(String receipient, String policyType, String ts, String ruleType, String accountType) {
+    public void send(String recipient, String policyType, String ts, String ruleType, String accountType) {
         // Recipient's email ID needs to be mentioned.
-        String to = receipient;
+        String to = recipient;
 
         // Sender's email ID needs to be mentioned
-        String from = "zhaochenqi2013@gmail.com";
-        String password = "Dz_01290901";
+        String from = "capstonesocidia@gmail.com";
+        String password = "capstone2019";
 
         // Assuming you are sending email from localhost
         String host = "smtp.gmail.com";
@@ -78,7 +78,6 @@ public class MailSender {
         properties.put("mail.smtp.auth", true);
         properties.put("mail.smtp.starttls.enable", true);
 
-
         // Get the default Session object.
         Session session = Session.getDefaultInstance(properties,
                 new javax.mail.Authenticator() {
@@ -89,7 +88,6 @@ public class MailSender {
 
         try {
             Transport transport = session.getTransport();
-            InternetAddress addressFrom = new InternetAddress(from);
 
             // Create a default MimeMessage object.
             MimeMessage message = new MimeMessage(session);
@@ -114,7 +112,6 @@ public class MailSender {
             content = content.replaceFirst("hereispolicytype", policyType);
             content = content.replaceFirst("hereisruletype", ruleType);
             message.setContent(content, "text/html");
-
 
             // Send message
             transport.connect();
