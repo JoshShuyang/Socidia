@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import socidia.middleware_server.model.User;
 import socidia.middleware_server.model.UserSocialAccountConnection;
 import socidia.middleware_server.repository.UserRepository;
 import socidia.middleware_server.repository.UserSocialAccountConnectionRepository;

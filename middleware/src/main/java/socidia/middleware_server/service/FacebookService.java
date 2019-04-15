@@ -23,7 +23,6 @@ import socidia.middleware_server.model.User;
 import socidia.middleware_server.model.UserSocialAccountConnection;
 import socidia.middleware_server.repository.UserRepository;
 import socidia.middleware_server.repository.UserSocialAccountConnectionRepository;
-import sun.text.normalizer.Utility;
 import org.json.*;
 
 import java.net.URI;
