@@ -57,7 +57,7 @@ public class RegistrationListener implements ApplicationListener<OnRegistrationS
 
     private final MimeMessage constructEmailMessage(final OnRegistrationSuccessEvent event, final User user, final String token) {
         final String recipientAddress = user.getEmail();
-        final String confirmationUrl = event.getAppUrl() + "/registrationConfirm?token=" + token;
+        final String confirmationUrl = event.getAppUrl() + "middleware/registrationConfirm?token=" + token;
         final String message = messages.getMessage("message.regSucc", null, event.getLocale());
         Map<String, Object> variables = new HashMap<>();
         variables.put("name", user.getUsername());

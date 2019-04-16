@@ -8,7 +8,7 @@ public class UserSocialAccountConnection {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @OneToOne(targetEntity = User.class, fetch = FetchType.EAGER)
+    @OneToOne(targetEntity = User.class, fetch = FetchType.EAGER, cascade = {CascadeType.REMOVE})
     @JoinColumn(nullable = false, name = "user_id")
     private User user;
 

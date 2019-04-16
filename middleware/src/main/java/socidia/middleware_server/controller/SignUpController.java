@@ -91,7 +91,7 @@ public class SignUpController {
             final String messageError = messages.getMessage("message.invalidToken", null, locale);
             errorModelObject.setMessage(messageError);
             errorModelObject.setLink(env.getProperty("server.homepage"));
-            errorModelObject.setLinkMessage("go to homepage to login");
+            errorModelObject.setLinkMessage("go to homepage");
             modelAndView.addObject("error", errorModelObject);
 
             modelAndView.setViewName("error");
@@ -106,7 +106,7 @@ public class SignUpController {
             errorModelObject.setCaseNum("499");
             final String messageError = messages.getMessage("message.expired", null, locale);
             errorModelObject.setMessage(messageError);
-            errorModelObject.setLink(env.getProperty("server.homepage") + "/reapplyToken/");
+            errorModelObject.setLink(env.getProperty("server.homepage") + "/middleware/reapplytoken");
             errorModelObject.setLinkMessage("Reapply confirmation token to activate your account!");
             modelAndView.addObject("error", errorModelObject);
 
@@ -141,7 +141,7 @@ public class SignUpController {
         return modelAndView;
     }
 
-    @RequestMapping(value = "/reapplyToke", method = RequestMethod.GET)
+    @RequestMapping(value = "/reapplytoken", method = RequestMethod.GET)
     public HashMap<String, String> reapplyToke(HttpServletRequest request, @RequestParam("token") String token) {
         HashMap<String, String> returnJsonPair = new HashMap<>();
         Locale locale = request.getLocale();
@@ -155,7 +155,8 @@ public class SignUpController {
 
     private HashMap<String, String> sendConfirmEmail(HttpServletRequest request, HashMap<String, String> returnJsonPair, Locale locale, User user) {
         try {
-            String appUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+            //String appUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+            String appUrl = env.getProperty("server.homepage");
             eventPublisher.publishEvent(new OnRegistrationSuccessEvent(user, request.getLocale(), appUrl));
         } catch (Exception e) {
             e.printStackTrace();

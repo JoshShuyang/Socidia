@@ -20,6 +20,7 @@ import socidia.middleware_server.service.FacebookService;
 import socidia.middleware_server.service.UserService;
 
 import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
 import java.util.*;
 
 @RestController
@@ -63,7 +64,8 @@ public class SocialAccountConnectionController {
     // userId providerId providerUserId
     @GetMapping("/getSocialAccount")
     public List<?> getSocialAccount() {
-        String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+        Principal  p = SecurityContextHolder.getContext().getAuthentication();
+        String username = p.getName();
         User user = userRepository.findByEmail(username).get();
         return userSocialAccountConnectionRepository.findByUserId(user.getId());
     }

@@ -6,6 +6,7 @@ import socidia.middleware_server.dto.UserEdit;
 import socidia.middleware_server.dto.UserSignup;
 import socidia.middleware_server.model.User;
 import socidia.middleware_server.repository.RegistrationVerificationTokenRepository;
+import socidia.middleware_server.repository.RoleRepository;
 import socidia.middleware_server.repository.UserRepository;
 import socidia.middleware_server.repository.UserSocialAccountConnectionRepository;
 
@@ -24,6 +25,9 @@ public class UserController {
 
     @Autowired
     private RegistrationVerificationTokenRepository tokenRepository;
+
+    @Autowired
+    private RoleRepository roleRepository;
 
     @RequestMapping(value = "/user/edit", method = RequestMethod.PUT)
     public HashMap<String, String> editUser(@RequestBody UserEdit userEidt) {
@@ -45,9 +49,10 @@ public class UserController {
     @RequestMapping(value = "/user/delete/{id}", method = RequestMethod.DELETE)
     public void deleteUser(@PathVariable(value="id") long id) {
         HashMap<String, String> returnJsonPair = new HashMap<>();
+        //connectionRepository.deleteByUserId(id);
+        //tokenRepository.deleteByUserId(id);
+        //roleRepository.deleteByUserId(id);
         userRepository.deleteById(id);
-        connectionRepository.deleteByUserId(id);
-        tokenRepository.deleteByUserId(id);
     }
 
     @RequestMapping(value = "/user/disable/{id}", method = RequestMethod.PUT)

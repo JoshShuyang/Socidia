@@ -35,6 +35,7 @@ public class RESTAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuc
         long user_id = userRepository.findByEmail(username).get().getId();
         List<UserSocialAccountConnection> list = connectionRepository.findByUserId(user_id);
         String json = new ObjectMapper().writeValueAsString(list);
+        System.out.println(json);
         response.getWriter().write(json);
         response.flushBuffer();
     }
