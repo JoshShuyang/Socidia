@@ -50,8 +50,10 @@ angular.module('RestApiServices', ['ngResource'])
 			getItemViolateRulesResource: $resource(hostname+'/item_violate_rule/:itemId')
 		}
 	})
-	.factory('ManagementService', function($resource) {
-		return $resource('/api/management/manual_trigger', {}, {trigger: {method: 'POST'}});
+	.factory('AuthorService', function($resource) {
+		var hostname = window.location.hostname;
+		hostname = 'https://' +  hostname + ':8888';
+		return $resource(hostname+'/author/:authorId');
 	});
 
 

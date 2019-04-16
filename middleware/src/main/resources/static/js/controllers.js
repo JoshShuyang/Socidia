@@ -797,195 +797,25 @@ function RuleDetailController($rootScope, $scope, $timeout, $q) {
   });
 }
 
-function ItemListController($rootScope, $scope) {
-  //getSampleList();
-  $scope.showHostDetail = false;
-  $scope.hostSample = {};
-  $scope.alertMessage = "";
-  $scope.successMessage = "Alert updated successfully!";
-  $scope.validation = true;
-  $('[data-toggle="tooltip"]').tooltip();
-  
-  $scope.inspectHost = function(sample) {
-    $scope.showHostDetail = true;
-    
-    $scope.hostSample = {
-      alertId: sample.alertId,
-      name: sample.name,
-      comment: sample.comment
-    };
-    setTimeout(function(){$rootScope.scrollTo('hostDetial');}, 300);
-  };
-  angular.element(document).ready(function() {
-    var dTable = $('#samplesDataTable');
-    dTable.DataTable();
-  });
+function ItemListController($rootScope, $scope, ItemService, AuthorService) {
+  $scope.itemList = [];
+  var query = ItemService.getItemsResource.query({userId:29});
 
-  $scope.sampleList = [
-    {
-    'alertId': 1,
-    'name': 'Alert 1',
-    'comment': 'Alert for purpose 1',
-    'createdOn': '11-07-2018 3:45 PM',
-    'updatedOn': '11-07-2018 5:45 PM',
-    },
-      {
-    'alertId': 2,
-    'name': 'Alert 2',
-    'comment': 'Alert for purpose 2',
-    'createdOn': '11-07-2018 3:45 PM',
-    'updatedOn': '11-07-2018 5:45 PM',
-    },
-      {
-    'alertId': 3,
-    'name': 'Alert 3',
-    'comment': 'Alert for purpose 3',
-    'createdOn': '11-07-2018 3:45 PM',
-    'updatedOn': '11-07-2018 5:45 PM',
-    },
-      {
-    'alertId': 3,
-    'name': 'Alert 3',
-    'comment': 'Alert for purpose 3',
-    'createdOn': '11-07-2018 3:45 PM',
-    'updatedOn': '11-07-2018 5:45 PM',
-    },
-      {
-    'alertId': 4,
-    'name': 'Alert 4',
-    'comment': 'Alert for purpose 4',
-    'createdOn': '11-07-2018 3:45 PM',
-    'updatedOn': '11-07-2018 5:45 PM',
-    },
-      {
-    'alertId': 5,
-    'name': 'Alert 5',
-    'comment': 'Alert for purpose 5',
-    'createdOn': '11-07-2018 3:45 PM',
-    'updatedOn': '11-07-2018 5:45 PM',
-    },
-      {
-    'alertId': 6,
-    'name': 'Alert 6',
-    'comment': 'Alert for purpose 6',
-    'createdOn': '11-07-2018 3:45 PM',
-    'updatedOn': '11-07-2018 5:45 PM',
-    },
-      {
-    'alertId': 7,
-    'name': 'Alert 7',
-    'comment': 'Alert for purpose 7',
-    'createdOn': '11-07-2018 3:45 PM',
-    'updatedOn': '11-07-2018 5:45 PM',
-    },
-      {
-    'alertId': 8,
-    'name': 'Alert 8',
-    'comment': 'Alert for purpose 8',
-    'createdOn': '11-07-2018 3:45 PM',
-    'updatedOn': '11-07-2018 5:45 PM',
-    },
-      {
-    'alertId': 9,
-    'name': 'Alert 9',
-    'comment': 'Alert for purpose 9',
-    'createdOn': '11-07-2018 3:45 PM',
-    'updatedOn': '11-07-2018 5:45 PM',
-    },
-      {
-    'alertId': 10,
-    'name': 'Alert 10',
-    'comment': 'Alert for purpose 10',
-    'createdOn': '11-07-2018 3:45 PM',
-    'updatedOn': '11-07-2018 5:45 PM',
-    },
-  ];
-/*
-  $scope.updateSample = function() {
-    $scope.validation = validateSubmission();
+  query.$promise.then(function(res) {
+    $scope.itemList = res;
+    $scope.itemList.forEach(function(ele){
+      var query1 = AuthorService.get({authorId:ele.author_id});
 
-    if ($scope.validation) {
-      // turn read in text file from string to array of string
-      var doc = angular.copy($scope.hostSample.infoDocTextarea);
-      var docArray = doc.split("\n");
-      if (docArray[docArray.length - 1] === "")
-        docArray.pop();
-
-      var hsample = angular.copy($scope.hostSample);
-      hsample.hostRawInfo = docArray;
-      //update api call
-      var updated = SampleService.update(
-        {hostId:$scope.hostSample.hostId},
-        {host:hsample});
-
-      updated.$promise.then(function(res) {
-        //refresh sample list to display the updated content
-        if (res.error){
-          $scope.errorMessage = res.error;
-          $("#errorMess").css("display", "block").fadeOut(15000);
-        }
-        else {
-          $scope.hostSample.infoDocTextarea = res.data;
-          getSampleList();
-          $("#successMess").css("display", "block").fadeOut(5000);
-        }
-      });
-      
-      if ($scope.hostSample.infoDoc) {
-        delete $scope.hostSample.infoDoc;
-      }
-      $("#hostInfoInput").val("")
-    }
-  }
-
-  function validateSubmission() {
-    if ($scope.hostSample.os === "" || 
-        $scope.hostSample.prim === "" ||
-        $scope.hostSample.vendor === "" ||
-        $scope.hostSample.infoDocTextarea === "") {
-      $scope.alertMessage = "Please add complete information for a sample host!";
-      return false;
-    }
-
-    if ($scope.hostSample.infoDoc) {
-      var fileContent = angular.copy($scope.hostSample.infoDoc);
-      fileContent = fileContent.replace(/\n/g, "");
-      fileContent = fileContent.replace(/\s/g, "");
-
-      if (fileContent === "") {
-        delete $scope.hostSample.infoDoc
-        $("#hostInfoInput").val("")
-        $scope.alertMessage = "Empty host info document is not allowed!";
-        return false;
-      }
-    }
-
-    return true
-  }
-
-  function getSampleList() {
-    angular.element(document).ready(function() {  
-      $('#samplesDataTable').DataTable().destroy();
+      query1.$promise.then(function(res1){
+        ele.author_name = res1.author_name;
+      }).catch(function(err){});
     });
-    var query = SampleListService.get();
 
-    query.$promise
-    .then(function(res){
-      $scope.sampleList = res.data;
-    })
-    .then(function(){
-      angular.element(document).ready(function() {  
-        var dTable = $('#samplesDataTable');
-        dTable.DataTable();  
-      });
-    })
-  }
-
-  $scope.$watch('hostSample.infoDoc', function() {
-    if ($scope.hostSample.infoDoc)
-      $scope.hostSample.infoDocTextarea = $scope.hostSample.infoDoc;
-  });
-  */
+    angular.element(document).ready(function() {
+      var dTable = $('#ItemListDataTable');
+      dTable.DataTable();
+    });
+  }).catch(function(err){});
 }
 
 function ManagementController($rootScope, $scope) {
