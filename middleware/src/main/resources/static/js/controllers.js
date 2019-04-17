@@ -138,7 +138,7 @@ function DashboardController($rootScope, $scope, $q, DashboardService, PolicySer
   $('[data-toggle="tooltip"]').tooltip();
   $scope.passCheck = true;
 
-  var query = DashboardService.violationResource.query({userId:29});
+  var query = DashboardService.violationResource.query({userId:$rootScope.globals.currentUser.userId === 151 ? 29 : $rootScope.globals.currentUser.userId});
 
    query.$promise.then(function(res){
     $scope.scanHistory = res;
@@ -338,9 +338,9 @@ function DashboardController($rootScope, $scope, $q, DashboardService, PolicySer
   }
 }
 
-function PolicyListController($scope, PolicyService) {
+function PolicyListController($rootScope, $scope, PolicyService) {
   
-  var query = PolicyService.getResource.query({userId:29});
+  var query = PolicyService.getResource.query({userId:$rootScope.globals.currentUser.userId === 151 ? 29 : $rootScope.globals.currentUser.userId});
 
   query.$promise.then(function(res) {
     $scope.historicalData = res;
@@ -501,7 +501,7 @@ function RuleDetailController($rootScope, $scope, $timeout, $q) {
 
 function ItemListController($rootScope, $scope, ItemService, AuthorService) {
   $scope.itemList = [];
-  var query = ItemService.getItemsResource.query({userId:29});
+  var query = ItemService.getItemsResource.query({userId:$rootScope.globals.currentUser.userId === 151 ? 29 : $rootScope.globals.currentUser.userId});
 
   query.$promise.then(function(res) {
     $scope.itemList = res;
