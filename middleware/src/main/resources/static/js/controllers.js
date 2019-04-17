@@ -138,46 +138,20 @@ function DashboardController($rootScope, $scope, $q, DashboardService, PolicySer
   $('[data-toggle="tooltip"]').tooltip();
   $scope.passCheck = true;
 
-  var query1 = DashboardService.violationResource.query({userId:29});
-  var query2 = PolicyService.getResource.query({userId:29});
+  var query = DashboardService.violationResource.query({userId:29});
 
-   $q.all([query1.$promise, query2.$promise])
-  .then(function(resList){
-    $scope.policyHistory = resList[0];
-    $scope.totalPolicy = resList[1];
-    $scope.curPolicyStatus = $scope.policyHistory[$scope.policyHistory.length - 1];
+   query.$promise.then(function(res){
+    $scope.scanHistory = res;
+    $scope.curPolicyStatus = $scope.scanHistory[$scope.scanHistory.length - 1];
 
     var ruleMap = {};
     var vRulemap = {};
-/*
-    $scope.totalPolicy.forEach(function(ele){
-      var query = RuleService.getRulesResource.query({policyId:ele.id});
-
-      query.$promise.then(function(res){
-        res.forEach(function(e){
-          ruleMap[e.id] = true;
-        });
-      }).catch(function(err){})
-    })
-
-    var itemList = resList[2];
-
-    itemList.forEach(function(ele){
-      var query = ItemService.getItemViolateRulesResource.query({itemId:ele.id});
-
-      query.$promise.then(function(res){
-        res.forEach(function(ele){
-          vRulemap[ele.rule_id] = true;
-        });
-      }).catch(function(err){})
-    });
-*/
 
     $scope.curStatus = {
-      pTotal: $scope.totalPolicy.length,
-      pNumOfpass: $scope.totalPolicy.length - $scope.curPolicyStatus.number_policy_violation,
-      rTotal: 14,
-      rNumOfpass: 10
+      pTotal: $scope.curPolicyStatus.total_polices,
+      pNumOfpass: $scope.curPolicyStatus.total_polices - $scope.curPolicyStatus.number_policy_violation,
+      rTotal: $scope.curPolicyStatus.total_rules,
+      rNumOfpass: $scope.curPolicyStatus.total_rules - $scope.curPolicyStatus.number_rules_violation
     };
     var pPassRate = $scope.curStatus.pNumOfpass/$scope.curStatus.pTotal;
     var rPassRate = $scope.curStatus.rNumOfpass/$scope.curStatus.rTotal;
@@ -185,54 +159,21 @@ function DashboardController($rootScope, $scope, $q, DashboardService, PolicySer
     $scope.curStatus.rPassRate = $rootScope.decimalToPercent(rPassRate, 2);
 
     $scope.passCheck = ($scope.curStatus.pNumOfpass ===  $scope.curStatus.pTotal) ? true : false;
-  }).catch(function(errList){
-  })
 
-  $scope.overall = {
-    pPassRate: 92.23,
-    rPassRate: 84.10
-  };
+    var allRate = getPassRate($scope.scanHistory.length, $scope.scanHistory);
+    var dailyRate = getPassRate(5, $scope.scanHistory);
 
-  $scope.daily = {
-    pPassRate: 90.12,
-    rPassRate: 86.34
-  };
-
-  /*
-  var query = HistoryService.get();
-
-  query.$promise
-  .then(function(res) {
-    $scope.hisInfoList = res.data.hist_info_list;
-
-    var currentBuild = $scope.hisInfoList[$scope.hisInfoList.length - 1];
-
-    $scope.passCheck = currentBuild.pass_check;
-  
-    $scope.curBuildData = {
-      buildId: currentBuild.build_id,
-      buildDate: currentBuild.created_on,
-      numOfpass: currentBuild.total_hosts - currentBuild.total_failed_hosts,
-      total: currentBuild.total_hosts,
-      hostPassRate: $rootScope.decimalToPercent(currentBuild.host_pass_rate, 2),
-      newHostNum: currentBuild.new_hosts,
-      newHostRate: $rootScope.decimalToPercent(currentBuild.new_host_rate, 2)
+    $scope.overall = {
+      pPassRate: allRate[0],
+      rPassRate: allRate[1]
     };
 
-    $scope.overallData = {
-      buildsPassRate: $rootScope.decimalToPercent(res.data.overall_builds_pass_rate, 2),
-      hostsPassRate: $rootScope.decimalToPercent(res.data.overall_hosts_pass_rate, 2),
-      newHostsRate: $rootScope.decimalToPercent(res.data.overall_new_hosts_rate, 2)
-    }
-
-    $scope.monthlyData = {
-      buildsPassRate: $rootScope.decimalToPercent(res.data.monthly_builds_pass_rate, 2),
-      hostsPassRate: $rootScope.decimalToPercent(res.data.monthly_hosts_pass_rate, 2),
-      newHostsRate: $rootScope.decimalToPercent(res.data.monthly_new_hosts_rate, 2)
-    }
-  })
-  .then(function(){
-    //Pie Chart
+    $scope.daily = {
+      pPassRate: dailyRate[0],
+      rPassRate: dailyRate[1]
+    };
+  }).then(function(){
+    //pie chart
     setTimeout(function(){
       if ($('.easy-pie-chart').length > 0) {
         $('.easy-pie-chart').easyPieChart({
@@ -242,398 +183,159 @@ function DashboardController($rootScope, $scope, $q, DashboardService, PolicySer
         });
       }
     }, 300);
+  }).then(function(){
+    //trend chart
+    var policyPassRate = [];
+    var rulePassRate = [];
+
+    $scope.scanHistory.forEach(function(scan){
+      var pPassRate = 1-scan.number_policy_violation/scan.total_polices;
+      var rPassRate = 1-scan.number_rules_violation/scan.total_rules;
+      policyPassRate.push([
+        Date.parse(scan.created_at),
+        $rootScope.decimalToPercent(pPassRate > 0 ? pPassRate : 0, 2)
+      ]);
+
+      rulePassRate.push([
+        Date.parse(scan.created_at),
+        $rootScope.decimalToPercent(rPassRate > 0 ? rPassRate : 0, 2)
+      ]);
+    });
+
+    Highcharts.setOptions({
+      global: {
+        timezone: 'America/Los_Angeles',
+        useUTC: false
+      }
+    });
+
+    Highcharts.chart('policyTrendChart', {
+      chart: {
+        zoomType: 'x'
+      },
+      title: {
+        text: 'Policy Passing Rate Overall Trend'
+      },
+      subtitle: {
+        text: document.ontouchstart === undefined ?
+                  'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
+      },
+      xAxis: {
+        type: 'datetime'
+      },
+      yAxis: {
+        title: {
+          text: 'Passing rate %'
+        }
+      },
+      legend: {
+        enabled: false
+      },
+      plotOptions: {
+        area: {
+            fillColor: {
+                linearGradient: {
+                    x1: 0,
+                    y1: 0,
+                    x2: 0,
+                    y2: 1
+                },
+                stops: [
+                    [0, Highcharts.getOptions().colors[0]],
+                    [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+                ]
+            },
+            marker: {
+                radius: 2
+            },
+            lineWidth: 1,
+            states: {
+                hover: {
+                    lineWidth: 1
+                }
+            },
+            threshold: null
+        }
+      },
+
+      series: [{
+        type: 'area',
+        name: 'Passing Rate',
+        data: policyPassRate.sort(function(a, b){return a[0] - b[0]})
+      }]
+    });
+
+    Highcharts.chart('ruleTrendChart', {
+      chart: {
+        zoomType: 'x'
+      },
+      title: {
+        text: 'Rule Passing Rate Overall Trend'
+      },
+      subtitle: {
+        text: document.ontouchstart === undefined ?
+                  'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
+      },
+      xAxis: {
+        type: 'datetime'
+      },
+      yAxis: {
+        title: {
+          text: 'Passing rate %'
+        }
+      },
+      legend: {
+        enabled: false
+      },
+      plotOptions: {
+        area: {
+            fillColor: {
+                linearGradient: {
+                    x1: 0,
+                    y1: 0,
+                    x2: 0,
+                    y2: 1
+                },
+                stops: [
+                    [0, Highcharts.getOptions().colors[0]],
+                    [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+                ]
+            },
+            marker: {
+                radius: 2
+            },
+            lineWidth: 1,
+            states: {
+                hover: {
+                    lineWidth: 1
+                }
+            },
+            threshold: null
+        }
+      },
+
+      series: [{
+        type: 'area',
+        name: 'Passing Rate',
+        data: rulePassRate.sort(function(a, b){return a[0] - b[0]})
+      }]
+    });
+  }).catch(function(errList){
   })
-  .then(function() {
-    //Trend Chart
-    var hisPassRate = [];
 
-    $scope.hisInfoList.forEach(function(build){
-      hisPassRate.push([
-        Date.parse(build.created_on),
-        build.host_pass_rate * 100
-      ]);
-    });
+  function getPassRate(counts, historyList) {
+    var len = historyList.length - 1;
+    var pPassRate = 0;
+    var rPassRate = 0;
+    for (var i = len; i > len - counts; i--) {
+      var pNumOfpass = historyList[i].total_polices - historyList[i].number_policy_violation;
+      var rNumOfpass = historyList[i].total_rules - historyList[i].number_rules_violation;
+      pPassRate += (pNumOfpass > 0 ? pNumOfpass : 0)/historyList[i].total_polices;
+      rPassRate += (rNumOfpass > 0 ? rNumOfpass : 0)/historyList[i].total_rules;
+    }
 
-    Highcharts.setOptions({
-      global: {
-        timezone: 'America/Los_Angeles',
-        useUTC: false
-      }
-    });
-
-    Highcharts.chart('trendChart', {
-      chart: {
-        zoomType: 'x'
-      },
-      title: {
-        text: 'Passing Rate Overall Trend'
-      },
-      subtitle: {
-        text: document.ontouchstart === undefined ?
-                  'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
-      },
-      xAxis: {
-        type: 'datetime'
-      },
-      yAxis: {
-        title: {
-          text: 'Passing rate %'
-        }
-      },
-      legend: {
-        enabled: false
-      },
-      plotOptions: {
-        area: {
-            fillColor: {
-                linearGradient: {
-                    x1: 0,
-                    y1: 0,
-                    x2: 0,
-                    y2: 1
-                },
-                stops: [
-                    [0, Highcharts.getOptions().colors[0]],
-                    [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
-                ]
-            },
-            marker: {
-                radius: 2
-            },
-            lineWidth: 1,
-            states: {
-                hover: {
-                    lineWidth: 1
-                }
-            },
-            threshold: null
-        }
-      },
-
-      series: [{
-        type: 'area',
-        name: 'Passing Rate',
-        data: hisPassRate
-      }]
-    });
-  });
-  */
-  setTimeout(function(){
-      if ($('.easy-pie-chart').length > 0) {
-        $('.easy-pie-chart').easyPieChart({
-          onStep: function(from, to, percent) {
-            this.el.children[0].innerHTML = Math.floor(percent*100)/100 + '%';
-          },
-        });
-      }
-    }, 300);
-
-  //Trend Chart
-
-    var hisPassRate = [
-      [
-          1167609600000,
-          0.9123
-      ],
-      [
-          1167696000000,
-          0.9037
-      ],
-      [
-          1167782400000,
-          0.9159
-      ],
-      [
-          1167868800000,
-          0.8731
-      ],
-      [
-          1167955200000,
-          0.8944
-      ],
-      [
-          1168214400000,
-          0.913
-      ],
-      [
-          1168300800000,
-          0.9023
-      ],
-      [
-          1168387200000,
-          0.8423
-      ],
-      [
-          1168473600000,
-          0.842
-      ],
-      [
-          1168560000000,
-          0.8564
-      ],
-      [
-          1168819200000,
-          0.8843
-      ],
-      [
-          1168905600000,
-          0.853
-      ],
-      [
-          1168992000000,
-          0.8932
-      ],
-      [
-          1169078400000,
-          0.9123
-      ],
-      [
-          1169164800000,
-          0.9234
-      ],
-      [
-          1169424000000,
-          0.9345
-      ],
-      [
-          1169510400000,
-          0.9566
-      ],
-      [
-          1169596800000,
-          0.923
-      ],
-      [
-          1169683200000,
-          0.932
-      ],
-      [
-    		1169769600000,
-    		0.9123
-    	],
-    	[
-    		1170028800000,
-    		0.932
-    	],
-    	[
-    		1170115200000,
-    		0.9012
-    	],
-    	[
-    		1170201600000,
-    		0.9023
-    	],
-    	[
-    		1170288000000,
-    		0.9321
-    	],
-    	[
-    		1170374400000,
-    		0.9212
-    	],
-    	[
-    		1170633600000,
-    		0.9012
-    	],
-    	[
-    		1170720000000,
-    		0.8923
-    	],
-    	[
-    		1170806400000,
-    		0.9012
-    	],
-    	[
-    		1170892800000,
-    		0.9323
-    	],
-    	[
-    		1170979200000,
-    		0.9021
-    	],
-    	[
-    		1171238400000,
-    		0.9042
-    	],
-    	[
-    		1171324800000,
-    		0.932
-    	],
-    	[
-    		1171411200000,
-    		0.9231
-    	],
-    	[
-    		1171497600000,
-    		0.9021
-    	],
-    	[
-    		1171584000000,
-    		0.9123
-    	],
-    	[
-    		1171843200000,
-    		0.9321
-    	],
-    	[
-    		1171929600000,
-    		0.9092
-    	],
-    	[
-    		1172016000000,
-    		0.9126
-    	],
-    	[
-    		1172102400000,
-    		0.909
-    	],
-    	[
-    		1172188800000,
-    		0.921
-    	],
-    	[
-    		1172448000000,
-    		0.9023
-    	],
-    	[
-    		1172534400000,
-    		0.8903
-    	],
-    	[
-    		1172620800000,
-    		0.8921
-    	],
-    	[
-    		1172707200000,
-    		0.9132
-    	],
-    	[
-    		1172793600000,
-    		0.8849
-    	],
-    	[
-    		1173052800000,
-    		0.9403
-    	],
-    	[
-    		1173139200000,
-    		0.9232
-    	],
-    	[
-    		1173225600000,
-    		0.9123
-    	],
-    	[
-    		1173312000000,
-    		0.9021
-    	],
-    	[
-    		1173398400000,
-    		0.9043
-    	],
-    	[
-    		1173657600000,
-    		0.9501
-    	],
-    	[
-    		1173744000000,
-    		0.8923
-    	],
-    	[
-    		1173830400000,
-    		0.921
-    	],
-    	[
-    		1173916800000,
-    		0.9103
-    	],
-    	[
-    		1174003200000,
-    		0.929
-    	],
-    	[
-    		1174262400000,
-    		0.9421
-    	],
-    	[
-    		1174348800000,
-    		0.9343
-    	],
-    	[
-    		1174435200000,
-    		0.909
-    	]
-    ];
-/*
-    $scope.hisInfoList.forEach(function(build){
-      hisPassRate.push([
-        Date.parse(build.created_on),
-        build.host_pass_rate * 100
-      ]);
-    });*/
-
-    Highcharts.setOptions({
-      global: {
-        timezone: 'America/Los_Angeles',
-        useUTC: false
-      }
-    });
-
-    Highcharts.chart('trendChart', {
-      chart: {
-        zoomType: 'x'
-      },
-      title: {
-        text: 'Passing Rate Overall Trend'
-      },
-      subtitle: {
-        text: document.ontouchstart === undefined ?
-                  'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
-      },
-      xAxis: {
-        type: 'datetime'
-      },
-      yAxis: {
-        title: {
-          text: 'Passing rate %'
-        }
-      },
-      legend: {
-        enabled: false
-      },
-      plotOptions: {
-        area: {
-            fillColor: {
-                linearGradient: {
-                    x1: 0,
-                    y1: 0,
-                    x2: 0,
-                    y2: 1
-                },
-                stops: [
-                    [0, Highcharts.getOptions().colors[0]],
-                    [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
-                ]
-            },
-            marker: {
-                radius: 2
-            },
-            lineWidth: 1,
-            states: {
-                hover: {
-                    lineWidth: 1
-                }
-            },
-            threshold: null
-        }
-      },
-
-      series: [{
-        type: 'area',
-        name: 'Passing Rate',
-        data: hisPassRate
-      }]
-    });
+    return [$rootScope.decimalToPercent(pPassRate/counts, 2), $rootScope.decimalToPercent(rPassRate/counts, 2)];
+  }
 }
 
 function PolicyListController($scope, PolicyService) {
