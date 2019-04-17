@@ -18,7 +18,7 @@ public class ItemViolateRuleController {
     @Autowired
     ItemViolateRuleRepository itemViolateRuleRepository;
 
-    @GetMapping("/item_violate_rule/{itemId}")
+    @GetMapping("/item_violate_rule/{itemId}") //for item 3 violate [rules]
     public List<ItemViolateRule> getItemsViolateRulesbyItemId(@PathVariable String itemId){
         int item_id = Integer.parseInt(itemId);
         logger.info("Get item violates rules for item_id: " + itemId);

@@ -30,7 +30,7 @@ public class PolicyRuleController {
         return policyRulesRepository.save(rule);
     }
 
-    @GetMapping("/policy_rule/{id}")
+    @GetMapping("/policy_rule/{id}") //get rule info by rule id
     public Optional<Rule> getPolicybyId(@PathVariable String id){
         int ruleId = Integer.parseInt(id);
         logger.info("Get policy_rule for id: " + id);

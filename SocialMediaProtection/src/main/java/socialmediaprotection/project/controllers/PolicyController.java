@@ -18,7 +18,7 @@ public class PolicyController {
     @Autowired
     PolicyRepository policyRepository;
 
-    @GetMapping("/{userId}/policy")
+    @GetMapping("/{userId}/policy") // polcies of user 29 
     public List<Policy> getPolicybyUserId(@PathVariable String userId){
         int user_id = Integer.parseInt(userId);
         logger.info("Get policy for user_id: " + userId);

@@ -19,7 +19,7 @@ public class ItemController {
     @Autowired
     ItemRepository itemRepository;
 
-    @GetMapping("/{userId}/item")
+    @GetMapping("/{userId}/item") //violated items of user 29
     public List<Item> getItemsbyUserId(@PathVariable String userId){
         int user_id = Integer.parseInt(userId);
         logger.info("Get item for user_id: " + userId);

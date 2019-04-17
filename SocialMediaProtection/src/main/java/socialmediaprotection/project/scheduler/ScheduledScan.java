@@ -23,7 +23,7 @@ public class ScheduledScan {
     @Resource
     private Environment environment;
 
-    @Scheduled(fixedRate = 30000)
+    @Scheduled(fixedRate = 30000) //change to 3000000
     public void periodicScan() throws Exception {
         log.info("The time is now {}", dateFormat.format(new Date()));
         String access_token = environment.getProperty("access_token");
