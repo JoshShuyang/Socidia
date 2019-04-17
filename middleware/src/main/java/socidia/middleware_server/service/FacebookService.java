@@ -56,9 +56,8 @@ public class FacebookService {
         AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, "https://localhost:8443/middleware/facebook", null);
         Connection<Facebook> connection = connectionFactory.createConnection(accessGrant);
 
-        //String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
-        //User user = userRepository.findByEmail(username).get();
-        User user = userRepository.findByEmail("na.yue@sjsu.edu").get();
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmail(username).get();
         String prividerId = connection.getKey().getProviderId();
         String providerUserId = connection.getKey().getProviderUserId();
         String accessToken = accessGrant.getAccessToken();
