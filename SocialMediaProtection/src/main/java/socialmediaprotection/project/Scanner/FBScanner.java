@@ -100,7 +100,7 @@ public class FBScanner {
                     authorID = resultSet.getInt(1);
                 }
 
-                PreparedStatement preparedStmt = con.prepareStatement("INSERT INTO items (user_id, author_id, post_content, page_name, item_type) VALUES (" + userId + ", " + authorID + ", '" + entry.getValue().getMessage() + "'," + "'Messi', '" + "FB" +"' )", Statement.RETURN_GENERATED_KEYS);
+                PreparedStatement preparedStmt = con.prepareStatement("INSERT INTO items (user_id, author_id, post_content, page_name, item_type) VALUES (" + userId + ", " + authorID + ", '" + entry.getValue().getMessage() + "'," + "'Messi', '" + "Facebook" +"' )", Statement.RETURN_GENERATED_KEYS);
                 preparedStmt.execute();
 
                 try (ResultSet generatedKeys = preparedStmt.getGeneratedKeys()) {
@@ -294,9 +294,9 @@ public class FBScanner {
             e.printStackTrace();
         }
         String ts = LocalDateTime.now().toString();
-        log.info("sending alert to " + recipient + "policy type is " + policyType + "rule type is " + ruleType + "account type is" + accountType + "time is " + ts);
+        log.info("sending alert to " + recipient + " policy type is " + policyType + ", rule type is " + ruleType + "account type is " + accountType + " time is " + ts);
         //change vickywenqiwang@gmail.com to recipient
-        mailSender.send("vickywenqiwang@gmail.com", policyType, ts, ruleType, accountType);
+        mailSender.send(recipient, policyType, ts, ruleType, accountType);
     }
     public void sendSms(String targetNumber, String msg) {
         smsSender.send(targetNumber, msg);

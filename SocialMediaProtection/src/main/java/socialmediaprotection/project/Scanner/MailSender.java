@@ -42,6 +42,7 @@ package socialmediaprotection.project.Scanner;
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -104,11 +105,12 @@ public class MailSender {
             // Now set the actual message
             //message.setText("This is actual message");
 
-            String html = readLineByLine("/Users/Vencci/Documents/SJSU Spring2019/CMPE 295B/Socidia/SocialMediaProtection/src/main/java/socialmediaprotection/project/Scanner/email.html");
+            String filePath = new File("email.html").getAbsolutePath();
+            String html = readLineByLine(filePath);
             // send the HTML
            // message.setContent(String.format("<h1>This is HTML message. Policy Type is %s, Time: %s</h1>", policyType, ts.toString()), "text/html");
             String content = html.replaceFirst("nowis2019-04-01", ts);
-            //content = content.replaceFirst("hereisaccounttype", accountType);
+            content = content.replaceFirst("hereisaccounttype", accountType);
             content = content.replaceFirst("hereispolicytype", policyType);
             content = content.replaceFirst("hereisruletype", ruleType);
             message.setContent(content, "text/html");
