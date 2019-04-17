@@ -26,7 +26,7 @@ public class ScheduledScan {
     @Scheduled(fixedRate = 30000) //change to 3000000
     public void periodicScan() throws Exception {
         log.info("The time is now {}", dateFormat.format(new Date()));
-        String access_token = environment.getProperty("access_token");
+        String access_token = getAccessToken();
         String options = environment.getProperty("options");
         String dataSource = environment.getProperty("spring.datasource.url");
         String username = environment.getProperty("spring.datasource.username");
@@ -39,6 +39,28 @@ public class ScheduledScan {
             FBScanner fbScanner = new FBScanner(access_token, options, id.intValue(), dataSource, username, password);
             fbScanner.scan();
         }
+    }
+
+    public String getAccessToken() {
+        String dataSource = environment.getProperty("spring.datasource.url");
+        String username = environment.getProperty("spring.datasource.username");
+        String password = environment.getProperty("spring.datasource.password");
+
+        Connection con= null;
+        Statement stmt= null;
+        String access_token = "";
+
+        try {
+            con = DriverManager.getConnection(dataSource, username, password);
+            stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery("select * from user_token");
+
+            while(rs.next())
+                access_token = rs.getString(3);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return access_token;
     }
 
     public List<Integer> getUserIds() {

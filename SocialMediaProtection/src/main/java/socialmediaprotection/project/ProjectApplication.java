@@ -1,17 +1,12 @@
 package socialmediaprotection.project;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.core.io.support.PropertiesLoaderUtils;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import socialmediaprotection.project.Scanner.FBScanner;
-import socialmediaprotection.project.config.Configuraton;
-import socialmediaprotection.project.dataRepository.PolicyRepository;
 
-import java.io.IOException;
-import java.util.Properties;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import socialmediaprotection.project.Scanner.classifier.ClassifierSystem;
+
 
 @SpringBootApplication
 @EnableScheduling
@@ -36,6 +31,10 @@ public class ProjectApplication {
 //
 //		FBScanner fbScanner = new FBScanner(access_token, options ,29, d, u, p);
 //		fbScanner.scan();
+		ClassifierSystem classifierSystem = new ClassifierSystem();
+		classifierSystem.run();
+
+
 
 
 	}

@@ -221,6 +221,7 @@ public class FBScanner {
             while (rs.next()) {
                 sb.append(rs.getString(1)).append(", ");
             }
+            System.out.println(sb.toString());
             sb.delete(sb.length() - 2, sb.length());
         } catch (SQLException e) {
             e.printStackTrace();

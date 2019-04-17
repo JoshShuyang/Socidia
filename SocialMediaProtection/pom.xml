@@ -65,6 +65,12 @@
 			<artifactId>twilio</artifactId>
 			<version>7.20.0</version>
 		</dependency>
+		<dependency>
+			<groupId>com.monkeylearn</groupId>
+			<artifactId>monkeylearn-java</artifactId>
+			<version>0.1.5</version>
+			<scope>compile</scope>
+		</dependency>
 
 	</dependencies>
 
