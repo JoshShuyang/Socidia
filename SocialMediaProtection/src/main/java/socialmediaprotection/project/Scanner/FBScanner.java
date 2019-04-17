@@ -205,6 +205,12 @@ public class FBScanner {
     public void sendMail() {
         String policyType = "policyType";
         StringBuilder sb = new StringBuilder();
+        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        inputFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        String lastScanDateUTC = inputFormat.format(lastScanDate);
+
+        System.out.println(lastScanDateUTC);
+
         try {
             String queryString = String.format("select policy_name\n" +
                     "from policy, policy_rules, item_violate_rules, items\n" +
@@ -212,7 +218,7 @@ public class FBScanner {
                     "\t\titems.updated_at > '%s' and \n" +
                     "\t\titems.id = item_violate_rules.item_id and \n" +
                     "\t\titem_violate_rules.rule_id = policy_rules.id and \n" +
-                    "\t\tpolicy_rules.policy_id = policy.policy_id;", userId, lastScanDate.toString());
+                    "\t\tpolicy_rules.policy_id = policy.policy_id;", userId, lastScanDateUTC);
             log.info("policyType query string is " + queryString);
             Connection conn = DriverManager.getConnection(dataSource, username, password);;
             Statement stmt = null;
@@ -221,7 +227,7 @@ public class FBScanner {
             while (rs.next()) {
                 sb.append(rs.getString(1)).append(", ");
             }
-            System.out.println(sb.toString());
+
             sb.delete(sb.length() - 2, sb.length());
         } catch (SQLException e) {
             e.printStackTrace();
@@ -237,7 +243,7 @@ public class FBScanner {
                     "where  `items`.`user_id` = %s and \n" +
                     "\t\t`items`.`updated_at` > '%s' and \n" +
                     "\t\t`items`.`id` = `item_violate_rules`.`item_id` and \n" +
-                    "\t\t`item_violate_rules`.`rule_id` = `policy_rules`.`id`;", userId, lastScanDate.toString());
+                    "\t\t`item_violate_rules`.`rule_id` = `policy_rules`.`id`;", userId, lastScanDateUTC);
             log.info("ruleType query string is " + queryString);
             Connection conn = DriverManager.getConnection(dataSource, username, password);;
             Statement stmt = null;
@@ -258,7 +264,7 @@ public class FBScanner {
             String queryString = String.format("select item_type\n" +
                     "from items\n" +
                     "where items.user_id = %s and " +
-                    "items.updated_at > '%s';", userId, lastScanDate.toString());
+                    "items.updated_at > '%s';", userId, lastScanDateUTC);
             log.info("accountType query string is " + queryString);
             Connection conn = DriverManager.getConnection(dataSource, username, password);;
             Statement stmt = null;
