@@ -21,18 +21,21 @@ function LoginController($rootScope, $scope, $location, UserService, Authenticat
   AuthenticationService.ClearCredentials();
 
   $scope.login = function() {
-    AuthenticationService.SetCredentials($scope.user.email, $scope.user.password);
     var userLogin = UserService.loginResource.login({username:$scope.user.email, password:$scope.user.password});
 
     userLogin.$promise.then(function(res){
-      $location.path('/link_accounts');
       if (res.error) {
         $scope.errorMessage = res.error;
         $("#errorMess").css("display", "block").fadeOut(10000);
       }
-      else if (res.success) {
-        AuthenticationService.SetCredentials($scope.user.email, $scope.user.password);
-        $location.path('/home/dashboard');
+      else if (res !== {}){
+        AuthenticationService.SetCredentials($scope.user.email, $scope.user.password, res.user);
+        if (res.providerId === "facebook") {
+          $location.path('/dashboard');
+        }
+      }
+      else {
+        $location.path('/link_accounts');
       }
     });
   }
@@ -41,6 +44,7 @@ function LoginController($rootScope, $scope, $location, UserService, Authenticat
 function RegisterController($rootScope, $scope, $location, RegisterService, AuthenticationService) {
   AuthenticationService.ClearCredentials();
   $scope.alertMessage = "";
+  $scope.errorMessage = "";
   $scope.successMessage = "Registered successfully! Please go to your email and click on the verification link!";
   $scope.validation = true;
   $scope.userInfo = {
@@ -95,11 +99,34 @@ function RegisterController($rootScope, $scope, $location, RegisterService, Auth
   }
 }
 
-function LinkAccountsController($rootScope, $scope, $location, UserService) {
+function LinkAccountsController($rootScope, $scope, $location, LinkService) {
+  $scope.socialAccount = {
+    facebook: false,
+    twitter: false,
+    instagram: false
+  }
 
   $scope.linkSocialAccounts = function() {
-    $location.path('/home/dashboard');
+    var linkSocialAccount = LinkService.linkResource.get();
+
+    linkSocialAccount.$promise.then(function(res) {
+      console.log(res);
+      //$location.path('/home/dashboard');
+    }).catch(function(error){
+
+    })
   }
+
+  var getSocialAccount = LinkService.getResource.get();
+
+  setInterval(function(){
+    getSocialAccount.$promise.then(function(res) {
+      console.log(res);
+      //$location.path('/home/dashboard');
+    }).catch(function(error){
+
+    })
+  }, 5000);
 }
 
 function DashboardController($rootScope, $scope) {

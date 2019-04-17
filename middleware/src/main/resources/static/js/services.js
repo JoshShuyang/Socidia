@@ -10,23 +10,11 @@ angular.module('RestApiServices', ['ngResource'])
 	.factory('RegisterService', function($resource) {
 		return $resource('/middleware/signup');
 	})
-	.factory('HistoryService', function($resource) {
-		return $resource('/api/history');
-	})
-	.factory('BuildService', function($resource) {
-		return $resource('/api/build/:buildId');
-	})
-	.factory('HostService', function($resource) {
-		return $resource('/api/build/:buildId/host/:hostId');
-	})
-    .factory('HostInfoService', function($resource) {
-		return $resource('/api/build/:buildId/host_info/:hostId');
-	})
-	.factory('HostHistoryService', function($resource) {
-		return $resource('/api/host/:hostId');
-	})
-	.factory('SampleListService', function($resource) {
-		return $resource('/api/samples');
+	.factory('LinkService', function($resource) {
+		return {
+			linkResource: $resource('/middleware/facebook'),
+			getResource: $resource('/middleware/getSocialAccount')
+		}
 	})
 	.factory('SampleService', function($resource) {
 		return $resource('/api/sample/:hostId', {hostId: '@hostId'}, {update: {method: 'PUT'}});
@@ -42,14 +30,15 @@ angular.module('Authentication', [])
 		function (Base64, $http, $cookies, $rootScope, $timeout) {
 			var service = {};
 
-			service.SetCredentials = function (email, password) {
+			service.SetCredentials = function (email, password, user) {
 				var authdata = Base64.encode(email + ':' + password);
 				var username = email.substring(0, email.indexOf("@"));
 
 				$rootScope.globals = {
 					currentUser: {
 						email: email,
-						username: username,
+						username: user.username || username,
+						userId: user.id,
 						authdata: authdata
 					}
 				};
@@ -61,6 +50,7 @@ angular.module('Authentication', [])
 			service.ClearCredentials = function () {
 				$rootScope.globals = {};
 				$cookies.remove('globals');
+				$cookies.remove('JSESSIONID');
 				$http.defaults.headers.common.Authorization = 'Basic ';
 			};
 

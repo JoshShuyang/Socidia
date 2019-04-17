@@ -32,9 +32,16 @@ public class RESTAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuc
         clearAuthenticationAttributes(request);
         response.setStatus(HttpStatus.OK.value());
         String username = authentication.getName();
+        System.out.println(username);
         long user_id = userRepository.findByEmail(username).get().getId();
+        System.out.println(user_id);
         List<UserSocialAccountConnection> list = connectionRepository.findByUserId(user_id);
-        String json = new ObjectMapper().writeValueAsString(list);
+        System.out.println(list);
+        String json = "{}"; 
+        if (list != null && !list.isEmpty()) { 
+            json = new ObjectMapper().writeValueAsString(list.get(0));
+        }
+
         System.out.println(json);
         response.getWriter().write(json);
         response.flushBuffer();
