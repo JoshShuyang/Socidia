@@ -95,9 +95,20 @@ scd.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
 
     	$rootScope.$on('$locationChangeStart', function (event, next, current) {
         	// redirect to login page if not logged in and trying to access a restricted page
-        	if ($location.path() !== '/login' && $location.path() !== '/register' && !$rootScope.globals.currentUser) {
-            	$location.path('/login');
+        	if ($location.path() !== '/login' && $location.path() !== '/register' && $location.path() !== '/link_accounts') {
+                try {
+                    var authdata = $rootScope.globals.currentUser.authdata;
+                    if (authdata === undefined)
+                        $location.path('/link_accounts');
+                }
+                catch (error) {
+                    $location.path('/login');
+                }
         	}
+
+            if ($location.path() === '/link_accounts' && !$rootScope.globals.currentUser) {
+                $location.path('/login');
+            }
     	});
 
         //global functions

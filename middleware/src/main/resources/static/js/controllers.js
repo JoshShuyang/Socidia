@@ -28,14 +28,15 @@ function LoginController($rootScope, $scope, $location, UserService, Authenticat
         $scope.errorMessage = res.error;
         $("#errorMess").css("display", "block").fadeOut(10000);
       }
-      else if (res !== {}){
-        AuthenticationService.SetCredentials($scope.user.email, $scope.user.password, res.user);
-        if (res.providerId === "facebook") {
+      else {
+        AuthenticationService.SetCredentials($scope.user.email, res.user);
+        if (res.connection.length === 0) {
+          $location.path('/link_accounts');
+        }
+        else {
+          AuthenticationService.SetCredentialsLvl2($scope.user.email, res.user.id);
           $location.path('/dashboard');
         }
-      }
-      else {
-        $location.path('/link_accounts');
       }
     });
   }
@@ -99,7 +100,7 @@ function RegisterController($rootScope, $scope, $location, RegisterService, Auth
   }
 }
 
-function LinkAccountsController($rootScope, $scope, $location, LinkService) {
+function LinkAccountsController($rootScope, $scope, $location, LinkService, AuthenticationService) {
   $scope.socialAccount = {
     facebook: false,
     twitter: false,
@@ -110,19 +111,22 @@ function LinkAccountsController($rootScope, $scope, $location, LinkService) {
     var linkSocialAccount = LinkService.linkResource.get();
 
     linkSocialAccount.$promise.then(function(res) {
-      console.log(res);
-      //$location.path('/home/dashboard');
+      if (res.oauthURL) {
+        window.open(res.oauthURL);
+      }
     }).catch(function(error){
-
     })
   }
 
-  var getSocialAccount = LinkService.getResource.get();
-
   setInterval(function(){
+    var getSocialAccount = LinkService.getResource.query();
+
     getSocialAccount.$promise.then(function(res) {
-      console.log(res);
-      //$location.path('/home/dashboard');
+      if (res.length > 0){
+        var userInfo = res[0];
+        AuthenticationService.SetCredentialsLvl2(userInfo.user.email, userInfo.user.id);
+        $location.path('/home/dashboard');
+      }
     }).catch(function(error){
 
     })
@@ -569,9 +573,9 @@ function DashboardController($rootScope, $scope) {
     });
 }
 
-function PolicyListController($scope) {
-    /*
-  var query = HistoryService.get();
+function PolicyListController($scope, PolicyService) {
+  
+  var query = PolicyService.getResource.get({userId:rootScope.globals.currentUser.userId});
 
   query.$promise.then(function(res) {
     angular.element(document).ready(function() {
@@ -579,13 +583,8 @@ function PolicyListController($scope) {
       dTable.DataTable({"order": [[ 0, "desc" ]]});
     });
 
-    $scope.historicalData = res.data.hist_info_list;
-  });*/
+  });
 
-    angular.element(document).ready(function() {
-      var dTable = $('#buildsDataTable');
-      dTable.DataTable();
-    });
     $scope.historicalData = [
 			{
 				'build_id': 1,

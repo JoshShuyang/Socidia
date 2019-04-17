@@ -12,12 +12,16 @@ angular.module('RestApiServices', ['ngResource'])
 	})
 	.factory('LinkService', function($resource) {
 		return {
-			linkResource: $resource('/middleware/facebook'),
+			linkResource: $resource('/middleware/createFacebookAuthorization'),
 			getResource: $resource('/middleware/getSocialAccount')
 		}
 	})
-	.factory('SampleService', function($resource) {
-		return $resource('/api/sample/:hostId', {hostId: '@hostId'}, {update: {method: 'PUT'}});
+	.factory('PolicyService', function($resource) {
+		return {
+			getResource: $resource('/:userId/policy'),
+			postResource: $resource('/policy'),
+			putResource: $resource('/policy/:policyId')
+		}
 	})
 	.factory('ManagementService', function($resource) {
 		return $resource('/api/management/manual_trigger', {}, {trigger: {method: 'POST'}});
@@ -30,22 +34,27 @@ angular.module('Authentication', [])
 		function (Base64, $http, $cookies, $rootScope, $timeout) {
 			var service = {};
 
-			service.SetCredentials = function (email, password, user) {
-				var authdata = Base64.encode(email + ':' + password);
+			service.SetCredentials = function (email, user) {
 				var username = email.substring(0, email.indexOf("@"));
 
 				$rootScope.globals = {
 					currentUser: {
 						email: email,
 						username: user.username || username,
-						userId: user.id,
-						authdata: authdata
+						userId: user.id
 					}
 				};
 
-				$http.defaults.headers.common['Authorization'] = 'Basic ' + authdata; // jshint ignore:line
 				$cookies.putObject('globals', $rootScope.globals);
 			};
+
+			service.SetCredentialsLvl2 = function (email, userId) {
+				var authdata = Base64.encode(email + ':' + userId);
+
+				$http.defaults.headers.common['Authorization'] = 'Basic ' + authdata; // jshint ignore:line
+				$rootScope.globals.currentUser.authdata = authdata;
+				$cookies.putObject('globals', $rootScope.globals);
+			}
 
 			service.ClearCredentials = function () {
 				$rootScope.globals = {};
