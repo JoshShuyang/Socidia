@@ -112,6 +112,18 @@ public class FBScanner {
                         throw new SQLException("Creating item failed, no ID obtained.");
                     }
                 }
+
+                Set<Integer> policyNumSet = new HashSet<>();
+
+                for (Integer rule_id: violations.keySet()) {
+                    ResultSet resultSetPolicyRule = stmt.executeQuery("select * from policy_rules WHERE policy_rules.id = " + rule_id.toString());
+                    while(resultSetPolicyRule.next()) {
+                        policyNumSet.add(resultSetPolicyRule.getInt(2));
+                    }
+                }
+
+                PreparedStatement userInsideInfoStmt = con.prepareStatement("INSERT INTO user_inside_info (user_id, number_policy_violation) VALUES (" + userId + ", " + policyNumSet.size() + ")", Statement.RETURN_GENERATED_KEYS);
+                userInsideInfoStmt.execute();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -273,7 +285,8 @@ public class FBScanner {
             while (rs.next()) {
                 sb.append(rs.getString(1)).append(", ");
             }
-            sb.delete(sb.length() - 2, sb.length());
+            if (sb.length() > 2)
+                sb.delete(sb.length() - 2, sb.length());
         } catch (SQLException e) {
             e.printStackTrace();
         }
