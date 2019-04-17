@@ -15,6 +15,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
 @Component
@@ -33,14 +34,14 @@ public class RESTAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuc
         response.setStatus(HttpStatus.OK.value());
         String username = authentication.getName();
         System.out.println(username);
-        long user_id = userRepository.findByEmail(username).get().getId();
-        System.out.println(user_id);
+        User user = userRepository.findByEmail(username).get();
+        long user_id = user.getId();
         List<UserSocialAccountConnection> list = connectionRepository.findByUserId(user_id);
-        System.out.println(list);
-        String json = "{}"; 
-        if (list != null && !list.isEmpty()) { 
-            json = new ObjectMapper().writeValueAsString(list.get(0));
-        }
+
+        HashMap<String, Object> returnJsonPair = new HashMap<>();
+        returnJsonPair.put("user", user);
+        returnJsonPair.put("connection", list);
+        String json = new ObjectMapper().writeValueAsString(returnJsonPair);
 
         System.out.println(json);
         response.getWriter().write(json);
