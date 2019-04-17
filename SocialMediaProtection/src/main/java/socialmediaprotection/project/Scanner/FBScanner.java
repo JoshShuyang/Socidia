@@ -1,5 +1,6 @@
 package socialmediaprotection.project.Scanner;
 
+import com.monkeylearn.MonkeyLearnException;
 import com.restfb.DefaultFacebookClient;
 import com.restfb.FacebookClient;
 import com.restfb.Parameter;
@@ -7,11 +8,13 @@ import com.restfb.Version;
 import com.restfb.json.JsonArray;
 import com.restfb.json.JsonObject;
 import com.restfb.json.JsonValue;
+import org.json.simple.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import socialmediaprotection.project.Scanner.Facebook.FBPost;
+import socialmediaprotection.project.Scanner.classifier.ClassifierSystem;
 import socialmediaprotection.project.scheduler.ScheduledScan;
 
 import java.sql.*;
@@ -132,14 +135,26 @@ public class FBScanner {
         con.close();
     }
 
-    private void applyRulesToPost() {
+    private void applyRulesToPost() throws MonkeyLearnException {
         log.info("Apply rules to post!");
+        String[] data = new String[unScannedFBPosts.size()];
+        int i = 0;
+        for (FBPost fbPost: unScannedFBPosts) {
+            data[i++] = fbPost.getMessage();
+        }
         for (FBPost fbPost: unScannedFBPosts) {
             for (Map.Entry<Integer, String> entry: policyRuleMapping.entrySet()) {
                 String fbMessage = fbPost.getMessage();
                 if (fbMessage != null && fbMessage.equals(entry.getValue())) {
                     violations.put(entry.getKey(), fbPost);
-                }
+                } /*else if (entry.getValue().equals("Profanity")) {
+                    ClassifierSystem classifierSystem = new ClassifierSystem(data);
+                    JSONArray jsonArray = classifierSystem.checkProfanity();
+//                    if (jsonArray.contains)
+                } else if (entry.getValue().equals("Business")) {
+                    ClassifierSystem classifierSystem = new ClassifierSystem(data);
+                    classifierSystem.checkBusiness();
+                }*/
             }
         }
     }
