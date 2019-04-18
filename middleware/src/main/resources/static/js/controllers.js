@@ -515,7 +515,7 @@ function ItemListController($rootScope, $scope, ItemService, AuthorService) {
 
     angular.element(document).ready(function() {
       var dTable = $('#ItemListDataTable');
-      dTable.DataTable();
+      dTable.DataTable({"order": [[ 0, "desc" ]]});
     });
   }).catch(function(err){});
 }
