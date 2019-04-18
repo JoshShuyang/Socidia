@@ -254,8 +254,8 @@ public class FBScanner {
             while (rs.next()) {
                 sb.append(rs.getString(1)).append(", ");
             }
-
-            sb.delete(sb.length() - 2, sb.length());
+            if (sb.length() > 2)
+                sb.delete(sb.length() - 2, sb.length());
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -279,7 +279,8 @@ public class FBScanner {
             while (rs.next()) {
                 sb.append(rs.getString(1)).append(", ");
             }
-            sb.delete(sb.length() - 2, sb.length());
+            if (sb.length() > 2)
+                sb.delete(sb.length() - 2, sb.length());
         } catch (SQLException e) {
             e.printStackTrace();
         }
