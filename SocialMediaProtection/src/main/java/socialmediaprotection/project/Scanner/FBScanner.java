@@ -1,5 +1,6 @@
 package socialmediaprotection.project.Scanner;
 
+import com.google.api.services.safebrowsing.model.ThreatMatch;
 import com.monkeylearn.MonkeyLearnException;
 import com.restfb.DefaultFacebookClient;
 import com.restfb.FacebookClient;
@@ -9,14 +10,18 @@ import com.restfb.json.JsonArray;
 import com.restfb.json.JsonObject;
 import com.restfb.json.JsonValue;
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import socialmediaprotection.project.Scanner.Facebook.FBPost;
 import socialmediaprotection.project.Scanner.classifier.ClassifierSystem;
+import socialmediaprotection.project.Scanner.classifier.GoogleSafeBrowsing;
 import socialmediaprotection.project.scheduler.ScheduledScan;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -43,6 +48,8 @@ public class FBScanner {
     private List<FBPost> unScannedFBPosts;
     private Map<Integer, String> policyRuleMapping;
     private Map<Integer, FBPost> violations;
+    private int totalPolicies;
+    private int totalRules;
     @Autowired
     @Qualifier("javasampleapproachMailSender")
     public MailSender mailSender;
@@ -62,6 +69,8 @@ public class FBScanner {
         violations = new HashMap<>();
         mailSender = new socialmediaprotection.project.Scanner.MailSender();
         smsSender = new SmsSender();
+        totalPolicies = 0;
+        totalRules = 0;
     }
 
     public void scan() throws Exception {
@@ -125,7 +134,7 @@ public class FBScanner {
                     }
                 }
 
-                PreparedStatement userInsideInfoStmt = con.prepareStatement("INSERT INTO user_inside_info (user_id, number_policy_violation) VALUES (" + userId + ", " + policyNumSet.size() + ")", Statement.RETURN_GENERATED_KEYS);
+                PreparedStatement userInsideInfoStmt = con.prepareStatement("INSERT INTO user_inside_info (user_id, number_policy_violation, total_polices, total_rules, number_rules_violation) VALUES (" + userId + ", " + policyNumSet.size() + "," + totalPolicies + "," + totalRules + "," + violations.size()  + ")", Statement.RETURN_GENERATED_KEYS);
                 userInsideInfoStmt.execute();
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -147,14 +156,83 @@ public class FBScanner {
                 String fbMessage = fbPost.getMessage();
                 if (fbMessage != null && fbMessage.equals(entry.getValue())) {
                     violations.put(entry.getKey(), fbPost);
-                } /*else if (entry.getValue().equals("Profanity")) {
+                } else if (entry.getValue().equals("Profanity")) {
                     ClassifierSystem classifierSystem = new ClassifierSystem(data);
                     JSONArray jsonArray = classifierSystem.checkProfanity();
-//                    if (jsonArray.contains)
+                    if (((JSONObject) ((JSONArray)((JSONArray)jsonArray.get(0)).get(0)).get(0)).get("label").equals("profanity"))
+                        violations.put(entry.getKey(), fbPost);
                 } else if (entry.getValue().equals("Business")) {
                     ClassifierSystem classifierSystem = new ClassifierSystem(data);
-                    classifierSystem.checkBusiness();
-                }*/
+                    JSONArray jsonArray = classifierSystem.checkBusiness();
+                    System.out.println(jsonArray);
+                    if (((JSONObject) ((JSONArray)((JSONArray)jsonArray.get(0)).get(0)).get(0)).get("label").equals("Consumer Goods")
+                            || ((JSONObject) ((JSONArray)((JSONArray)jsonArray.get(0)).get(0)).get(0)).get("label").equals("Recreational") )
+                        violations.put(entry.getKey(), fbPost);
+                } else if (entry.getValue().equals("MALWARE")) {
+                    String content[] = new String[]{fbPost.getMessage()};
+                    try {
+                        List<ThreatMatch> threatMatches = GoogleSafeBrowsing.run(content);
+                        if (threatMatches != null && threatMatches.size() > 0) {
+                            for (ThreatMatch threatMatch : threatMatches) {
+                                if (threatMatch.get("threatType").equals("MALWARE"))
+                                    violations.put(entry.getKey(), fbPost);
+                            }
+                        }
+                    } catch (GeneralSecurityException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                } else if (entry.getValue().equals("SOCIAL_ENGINEERING")) {
+                    String content[] = new String[]{fbPost.getMessage()};
+                    try {
+                        List<ThreatMatch> threatMatches = GoogleSafeBrowsing.run(content);
+                        if (threatMatches != null && threatMatches.size() > 0) {
+                            for (ThreatMatch threatMatch : threatMatches) {
+                                if (threatMatch.get("threatType").equals("SOCIAL_ENGINEERING"))
+                                    violations.put(entry.getKey(), fbPost);
+                            }
+                        }
+                    } catch (GeneralSecurityException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                } else if (entry.getValue().equals("UNWANTED_SOFTWARE")) {
+                    String content[] = new String[]{fbPost.getMessage()};
+                    try {
+                        List<ThreatMatch> threatMatches = GoogleSafeBrowsing.run(content);
+                        if (threatMatches != null && threatMatches.size() > 0) {
+                            for (ThreatMatch threatMatch : threatMatches) {
+                                if (threatMatch.get("threatType").equals("UNWANTED_SOFTWARE"))
+                                    violations.put(entry.getKey(), fbPost);
+                            }
+                        }
+                    } catch (GeneralSecurityException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+
+                } else if (entry.getValue().equals("POTENTIALLY_HARMFUL_APPLICATION")) {
+                    String content[] = new String[]{fbPost.getMessage()};
+                    try {
+                        List<ThreatMatch> threatMatches = GoogleSafeBrowsing.run(content);
+                        if (threatMatches != null && threatMatches.size() > 0) {
+                            for (ThreatMatch threatMatch : threatMatches) {
+                                if (threatMatch.get("threatType").equals("POTENTIALLY_HARMFUL_APPLICATION"))
+                                    violations.put(entry.getKey(), fbPost);
+                            }
+                        }
+                    } catch (GeneralSecurityException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
     }
@@ -186,6 +264,7 @@ public class FBScanner {
 
 
             while(rs.next()) {
+                totalPolicies++;
                 policyIds.add(rs.getInt(1));
             }
 
@@ -193,6 +272,7 @@ public class FBScanner {
                 rs = stmt.executeQuery("select * from policy_rules WHERE policy_rules.policy_id = " + policyId);
 
                 while(rs.next()) {
+                    totalRules++;
                     int id = rs.getInt(1);
                     String content = rs.getString(4);
                     policyRuleMapping.put(id, content);
