@@ -339,107 +339,140 @@ function DashboardController($rootScope, $scope, $q, DashboardService, PolicySer
 }
 
 function PolicyListController($rootScope, $scope, PolicyService) {
+  $scope.showAddNew = false;
+  $scope.validation = true;
+  $scope.policyName = "";
+  $('[data-toggle="tooltip"]').tooltip();
+  getPolicyList();
   
-  var query = PolicyService.getResource.query({userId:$rootScope.globals.currentUser.userId === 151 ? 29 : $rootScope.globals.currentUser.userId});
+  $scope.addNewPolicy = function() {
+    $scope.validation = validateSubmission();
 
-  query.$promise.then(function(res) {
-    $scope.historicalData = res;
-    angular.element(document).ready(function() {
-      var dTable = $('#buildsDataTable');
-      dTable.DataTable({"order": [[ 0, "desc" ]]});
+    if ($scope.validation){
+      //fire api
+      var params = {
+        user_id: $rootScope.globals.currentUser.userId,
+        policy_name: $scope.policyName
+      };
+      var added = PolicyService.postResource.save({policy:params});
+
+      added.$promise.then(function(res){
+        $scope.policyName = "";
+        $scope.successMessage = "New policy added successfully!";
+        $("#successMess").css("display", "block").fadeOut(5000);
+        getPolicyList();
+      }).catch(function(err){
+        $scope.errorMessage = "Interal Error";
+        $("#errorMess").css("display", "block").fadeOut(15000);
+      });
+    }
+  }
+
+  function validateSubmission() {
+    if ($scope.policyName === "") {
+      $scope.alertMessage = "Please add a policy name!";
+      return false;
+    }
+
+    return true;
+  }
+
+  function getPolicyList() {
+    var query = PolicyService.getResource.query({userId:$rootScope.globals.currentUser.userId === 151 ? 29 : $rootScope.globals.currentUser.userId});
+
+    query.$promise.then(function(res) {
+      $scope.historicalData = res;
+      angular.element(document).ready(function() {
+        var dTable = $('#buildsDataTable');
+        dTable.DataTable({"order": [[ 0, "desc" ]]});
+      });
     });
-
-  });
+  }
 }
 
 function PolicyDetailController($rootScope, $scope, $timeout, $q, PolicyService, RuleService) {
   $scope.policyId = $rootScope.$stateParams.policyId;
-
-  /*
-  var query = BuildService.get({buildId: $scope.buildId});
-
-  query.$promise
-  .then(function(res) {
-    if (res.error) {
-      alert(res.error);
-      window.history.back();
-    }
-
-    var currentBuild = res.data;
-    $scope.hostsRegData = [];
-    $scope.passCheck = currentBuild.pass_check;
-
-    $scope.buildData = {
-      buildId: currentBuild.build_id,
-      buildDate: currentBuild.created_on,
-      numOfpass: currentBuild.total_hosts - currentBuild.total_failed_hosts,
-      total: currentBuild.total_hosts,
-      dplVersion: currentBuild.dpl_version,
-      dceVersion: currentBuild.dce_version,
-      actVersion: currentBuild.act_version,
-      hostPassRate: $rootScope.decimalToPercent(currentBuild.host_pass_rate, 2),
-      newHostNum: currentBuild.new_hosts,
-      newHostRate: $rootScope.decimalToPercent(currentBuild.new_host_rate, 2)
-    };
-
-    for (var key in currentBuild.regression_detail) {
-      // skip loop if the property is from prototype
-      if (!currentBuild.regression_detail.hasOwnProperty(key)) {continue;}
-
-      var hostRegressionInfo = currentBuild.regression_detail[key];
-
-      var infoForDisplay = {
-        hostId: hostRegressionInfo.host_id,
-        ip: hostRegressionInfo.ip,
-        matchRes: hostRegressionInfo.host_detail_match
-      }
-
-      $scope.hostsRegData.push(infoForDisplay);
-    }
-  })
-  .then(function() {
-    angular.element(document).ready(function() {  
-      var dTable = $('#hostsDataTable');
-      dTable.DataTable();  
-    });
-  });*/
-
-  var query1 = PolicyService.getPolicyResource.get({policyId: $scope.policyId}); 
-  var query2 = RuleService.getRulesResource.query({policyId: $scope.policyId});
-
-  $q.all([query1.$promise, query2.$promise])
-  .then(function(resList){
-    $scope.policyInfo = resList[0];
-    $scope.ruleList = resList[1];
-
-    $scope.policyData = {
-      numOfpass: $scope.ruleLis.length,
-      total: $scope.ruleLis.length,
-      hostPassRate: 100
-    };
-
-    $scope.alertSetting = {
-      socialAccount: {
-        facebook: true,
-        twitter: false,
-        instagram: false
-      },
-      alertMethod: {
-        email: $scope.policyInfo.notification_type === 0 ? true : false,
-        text: $scope.policyInfo.notification_type === 1 ? true : false,
-        phone: false
-      }
-    }
-    
-    angular.element(document).ready(function() {
-    var dTable = $('#hostsDataTable');
-    dTable.DataTable();
-  });
-  })
-  .catch(function(errList){
-  });
-
+  $scope.showAddNew = false;
+  $scope.validation = true;
+  $scope.ruleInfo = {
+    name: "",
+    content: ""
+  };
   $('[data-toggle="tooltip"]').tooltip();
+  getPolicyDetail();
+
+  $scope.addNewRule = function() {
+    $scope.validation = validateSubmission();
+
+    if ($scope.validation){
+      //fire api
+      var params = {
+        policy_id: $scope.policyId,
+        rule_name: $scope.ruleInfo.name,
+        rule_content: $scope.ruleInfo.content
+      };
+      var added = RuleService.postResource.save({rule:params});
+
+      added.$promise.then(function(res){
+        $scope.ruleInfo = {
+          name: "",
+          content: ""
+        };
+        $scope.successMessage = "New rule added successfully!";
+        $("#successMess").css("display", "block").fadeOut(5000);
+        getPolicyDetail();
+      }).catch(function(err){
+        $scope.errorMessage = "Interal Error";
+        $("#errorMess").css("display", "block").fadeOut(15000);
+      });
+    }
+  }
+
+  function validateSubmission() {
+    if ($scope.ruleInfo.name === "" || $scope.ruleInfo.content === "") {
+      $scope.alertMessage = "Please complete all required fields!";
+      return false;
+    }
+
+    return true;
+  }
+
+  function getPolicyDetail() {
+    var query1 = PolicyService.getPolicyResource.get({policyId: $scope.policyId}); 
+    var query2 = RuleService.getRulesResource.query({policyId: $scope.policyId});
+
+    $q.all([query1.$promise, query2.$promise])
+    .then(function(resList){
+      $scope.policyInfo = resList[0];
+      $scope.ruleList = resList[1];
+
+      $scope.policyData = {
+        numOfpass: $scope.ruleList.length,
+        total: $scope.ruleList.length,
+        hostPassRate: 100
+      };
+
+      $scope.alertSetting = {
+        socialAccount: {
+          facebook: true,
+          twitter: false,
+          instagram: false
+        },
+        alertMethod: {
+          email: $scope.policyInfo.notification_type === 0 ? true : false,
+          text: $scope.policyInfo.notification_type === 1 ? true : false,
+          phone: false
+        }
+      }
+      
+      angular.element(document).ready(function() {
+      var dTable = $('#hostsDataTable');
+      dTable.DataTable();
+    });
+    })
+    .catch(function(errList){
+    });
+  }
 }
 
 function RuleDetailController($rootScope, $scope, $timeout, $q) {

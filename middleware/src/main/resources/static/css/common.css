@@ -74,6 +74,18 @@
 	text-align: center;
 }
 
+.add-new {
+	position: absolute;
+	right:20px;
+	top:100px;
+}
+
+.add-new-rule {
+	position: absolute;
+	right:40px;
+	top:15px;
+}
+
 .right {
 	text-align: right;
 }

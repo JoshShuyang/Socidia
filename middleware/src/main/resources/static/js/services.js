@@ -38,7 +38,8 @@ angular.module('RestApiServices', ['ngResource'])
 		hostname = 'https://' +  hostname + ':8888';
 		return {
 			getRulesResource: $resource(hostname+'/policy/:policyId/rules'),
-			getRuleDetailResource: $resource(hostname+'/policy_rule/:ruleId')
+			getRuleDetailResource: $resource(hostname+'/policy_rule/:ruleId'),
+			postResource: $resource(hostname+'/policy_rule')
 		}
 	})
 	.factory('ItemService', function($resource) {

@@ -1,6 +1,62 @@
 <main class='main-content bgc-grey-100'>
   <div id='mainContent'>
     <h4 class="c-grey-900 mT-10 mB-30">Policies List</h4>
+    <div class="add-new">
+      <button type="button" class="btn cur-p btn-outline-primary" ng-click="showAddNew=!showAddNew">Add New</button>
+    </div>
+
+    <div ng-show="showAddNew">
+      <div class="masonry-item mB-20">
+        <div class="bgc-white p-20 bd">
+          <h6 class="c-grey-900">Add New Policy</h6>
+          <div class="mT-30">
+            <form>
+              <div class="form-group">
+                <label for="policyName">Policy Name</label>
+                <i class="text-danger ti-medall" data-toggle="tooltip" data-placement="right" title="Required Field"></i>
+                <input id="policyName" type="text" class="form-control" ng-model="policyName" ng-focus="validation=true" placeholder="Enter Policy Name">
+                <!--<small id="policyHelp" class="form-text text-muted">Corresponding to ...</small>-->
+              </div>
+              
+              <div id="alertMess" ng-show="!validation" class="alert alert-warning" role="alert">
+                {{alertMessage}}
+              </div>
+              <div id="errorMess" class="alert alert-danger display-none" role="alert">
+                {{errorMessage}}
+              </div>
+              <div id="successMess" class="alert alert-primary display-none" role="alert">
+                {{successMessage}}
+              </div>
+              <div>
+                <button type="button" class="btn cur-p btn-outline-primary" ng-click="showAddNew=!showAddNew">Close</button>
+                <button type="submit" class="btn btn-primary" data-toggle="modal" data-target="#submitModal">Submit</button>
+              </div>
+              <div class="modal fade" id="submitModal" tabindex="-1" role="dialog" aria-labelledby="submitModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="submitModalLabel">Add New Policy</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <p>Confirm to add the following policy: </p>
+                      <p>Policy Name: {{policyName}}</p>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                      <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="addNewPolicy()">Submit</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="row">
       <div class="col-md-12">
         <div class="bgc-white bd bdrs-3 p-20 mB-20">
