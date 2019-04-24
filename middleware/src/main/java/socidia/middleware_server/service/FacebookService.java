@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -41,19 +42,26 @@ public class FacebookService {
     @Autowired
     UserSocialAccountConnectionRepository userSocialAccountConnectionRepository;
 
+    @Autowired
+    private Environment env;
+
+    final String url = env.getProperty("server.homepage") + "middleware/facebook";
+
     public String createFacebookAuthorizationURL(){
 
         FacebookConnectionFactory connectionFactory = (FacebookConnectionFactory)registry.getConnectionFactory("facebook");
         OAuth2Operations oauthOperations = connectionFactory.getOAuthOperations();
         OAuth2Parameters params = new OAuth2Parameters();
-        params.setRedirectUri("https://localhost:8443/middleware/facebook");
+        params.setRedirectUri(url);
+        //params.setRedirectUri("https://localhost:8443/middleware/facebook");
         params.setScope("email");
         return oauthOperations.buildAuthorizeUrl(params);
     }
 
     public boolean createFacebookAccessToken(String code) {
         FacebookConnectionFactory connectionFactory = (FacebookConnectionFactory)registry.getConnectionFactory("facebook");
-        AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, "https://localhost:8443/middleware/facebook", null);
+        AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, url, null);
+        //AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, "https://localhost:8443/middleware/facebook", null);
         Connection<Facebook> connection = connectionFactory.createConnection(accessGrant);
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
