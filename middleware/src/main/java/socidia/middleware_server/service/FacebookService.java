@@ -45,13 +45,14 @@ public class FacebookService {
     @Autowired
     private Environment env;
 
-    final String url = env.getProperty("server.homepage") + "middleware/facebook";
+
 
     public String createFacebookAuthorizationURL(){
 
         FacebookConnectionFactory connectionFactory = (FacebookConnectionFactory)registry.getConnectionFactory("facebook");
         OAuth2Operations oauthOperations = connectionFactory.getOAuthOperations();
         OAuth2Parameters params = new OAuth2Parameters();
+        final String url = env.getProperty("server.homepage") + "middleware/facebook";
         params.setRedirectUri(url);
         //params.setRedirectUri("https://localhost:8443/middleware/facebook");
         params.setScope("email");
@@ -60,6 +61,7 @@ public class FacebookService {
 
     public boolean createFacebookAccessToken(String code) {
         FacebookConnectionFactory connectionFactory = (FacebookConnectionFactory)registry.getConnectionFactory("facebook");
+        final String url = env.getProperty("server.homepage") + "middleware/facebook";
         AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, url, null);
         //AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, "https://localhost:8443/middleware/facebook", null);
         Connection<Facebook> connection = connectionFactory.createConnection(accessGrant);
