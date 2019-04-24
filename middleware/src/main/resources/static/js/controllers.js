@@ -351,10 +351,10 @@ function PolicyListController($rootScope, $scope, PolicyService) {
     if ($scope.validation){
       //fire api
       var params = {
-        user_id: $rootScope.globals.currentUser.userId,
+        user_id: $rootScope.globals.currentUser.userId === 151 ? 29 : $rootScope.globals.currentUser.userId,
         policy_name: $scope.policyName
       };
-      var added = PolicyService.postResource.save({policy:params});
+      var added = PolicyService.postResource.save(params);
 
       added.$promise.then(function(res){
         $scope.policyName = "";
@@ -378,13 +378,16 @@ function PolicyListController($rootScope, $scope, PolicyService) {
   }
 
   function getPolicyList() {
+    angular.element(document).ready(function() {  
+      $('#policyListDataTable').DataTable().destroy();
+    });
     var query = PolicyService.getResource.query({userId:$rootScope.globals.currentUser.userId === 151 ? 29 : $rootScope.globals.currentUser.userId});
 
     query.$promise.then(function(res) {
       $scope.historicalData = res;
       angular.element(document).ready(function() {
-        var dTable = $('#buildsDataTable');
-        dTable.DataTable({"order": [[ 0, "desc" ]]});
+        var dTable = $('#policyListDataTable');
+        dTable.DataTable();
       });
     });
   }
@@ -411,7 +414,7 @@ function PolicyDetailController($rootScope, $scope, $timeout, $q, PolicyService,
         rule_name: $scope.ruleInfo.name,
         rule_content: $scope.ruleInfo.content
       };
-      var added = RuleService.postResource.save({rule:params});
+      var added = RuleService.postResource.save(params);
 
       added.$promise.then(function(res){
         $scope.ruleInfo = {
@@ -438,6 +441,10 @@ function PolicyDetailController($rootScope, $scope, $timeout, $q, PolicyService,
   }
 
   function getPolicyDetail() {
+    angular.element(document).ready(function() {  
+      $('#hostsDataTable').DataTable().destroy();
+    });
+
     var query1 = PolicyService.getPolicyResource.get({policyId: $scope.policyId}); 
     var query2 = RuleService.getRulesResource.query({policyId: $scope.policyId});
 
