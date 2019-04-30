@@ -30,12 +30,19 @@ public class UserController {
     private RoleRepository roleRepository;
 
     @RequestMapping(value = "/user/edit", method = RequestMethod.PUT)
-    public HashMap<String, String> editUser(@RequestBody UserEdit userEidt) {
+    public HashMap<String, String> editUser(@RequestBody UserEdit userEdit) {
         HashMap<String, String> returnJsonPair = new HashMap<>();
-        User user = userRepository.findByEmail(userEidt.getEmail()).get();
-        user.setPassword(userEidt.getPassword());
-        user.setUsername(userEidt.getUsername());
-        user.setPhoneNum(userEidt.getPhoneNum());
+        User user = userRepository.findByEmail(userEdit.getEmail()).get();
+        if (!userEdit.getUsername().isEmpty()) {
+            user.setUsername(userEdit.getUsername());
+        }
+        if (!userEdit.getPassword().isEmpty()) {
+            user.setPassword(userEdit.getPassword());
+        }
+        if (!userEdit.getPhoneNum().isEmpty()) {
+            user.setPhoneNum(userEdit.getPhoneNum());
+        }
+
         User res = userRepository.save(user);
         if (res != null) {
             returnJsonPair.put("success", "user info edits successfully");
